@@ -1,10 +1,11 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../App";
+
 import { StyleSheet, Text, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { RootTabParamList } from "../types/type";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Course_Searching">;
+type Props = NativeStackScreenProps<RootTabParamList, "Course_Searching">;
 
 export const Course_SearchingScreen = ({ navigation }: Props) => {
   return (
