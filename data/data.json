@@ -1,0 +1,51 @@
+{
+  "profiles": [
+    {
+      "id": 1,
+      "name": "Nguyễn Văn A",
+      "email": "vana@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/1.jpg",
+      "role": "student",
+      "bio": "Sinh viên năm 3, yêu thích lập trình di động và thiết kế UI/UX."
+    },
+    {
+      "id": 2,
+      "name": "Trần Thị B",
+      "email": "thib@example.com",
+      "avatar": "https://randomuser.me/api/portraits/women/2.jpg",
+      "role": "instructor",
+      "bio": "Giảng viên môn React Native với 5 năm kinh nghiệm trong phát triển ứng dụng di động."
+    },
+    {
+      "id": 3,
+      "name": "Lê Quốc Cường",
+      "email": "cuonglq@example.com",
+      "avatar": "https://randomuser.me/api/portraits/men/3.jpg",
+      "role": "student",
+      "bio": "Yêu thích học qua video, đang tham gia khóa React Native cơ bản."
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "userId": 1,
+      "courseId": 101,
+      "content": "Bài học rất dễ hiểu, cảm ơn cô B!",
+      "createdAt": "2025-10-21T09:15:00Z"
+    },
+    {
+      "id": 2,
+      "userId": 3,
+      "courseId": 101,
+      "content": "Phần ví dụ hơi nhanh, mong cô giải thích kỹ hơn!",
+      "createdAt": "2025-10-22T14:30:00Z"
+    },
+    {
+      "id": 3,
+      "userId": 2,
+      "courseId": 101,
+      "content": "Cảm ơn các bạn đã phản hồi, cô sẽ cập nhật thêm tài liệu chi tiết nhé!",
+      "createdAt": "2025-10-22T16:45:00Z"
+    }
+  ]
+}

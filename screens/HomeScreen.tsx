@@ -1,15 +1,57 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../App";
 import { StyleSheet, Text, View } from "react-native";
-import { Button, TextInput } from "react-native-paper";
+import { Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  CompositeNavigationProp,
+  NavigatorScreenParams,
+} from "@react-navigation/native";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList, RootTabParamList } from "../types/type";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Home">;
+type HomeNavProp = CompositeNavigationProp<
+  BottomTabNavigationProp<RootTabParamList, "Home">,
+  NativeStackNavigationProp<RootStackParamList>
+>;
 
-export const HomeScreen = ({ navigation }: Props) => {
+export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
   return (
-    <SafeAreaView >
-      <Text>home</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <Text style={styles.sectionTitle}>Trang chủ</Text>
+
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate("Course_Listing")}
+          style={styles.btn}
+        >
+          Đến Course Listing
+        </Button>
+
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate("Course_Detail")}
+          style={styles.btn}
+        >
+          Đến Course Detail
+        </Button>
+
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate("Learning")}
+          style={styles.btn}
+        >
+          Đến Learning
+        </Button>
+
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate("TeacherProfile")}
+          style={styles.btn}
+        >
+          Đến Teacher Profile
+        </Button>
+      </View>
     </SafeAreaView>
   );
 };
@@ -25,9 +67,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
-    marginVertical: 12,
-    color: "black",
+    marginBottom: 24,
+    textAlign: "center",
+  },
+  btn: {
+    marginVertical: 8,
   },
 });
