@@ -3,7 +3,11 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import Ionicons from "react-native-vector-icons/Ionicons";
+
+import { TiHomeOutline } from "react-icons/ti";
+import { GoSearch } from "react-icons/go";
+import { PiBookOpenLight } from "react-icons/pi";
+import { CiUser } from "react-icons/ci";
 
 import { HomeScreen } from "./screens/HomeScreen";
 import { UserProfileScreen } from "./screens/UserProfileScreen";
@@ -18,7 +22,7 @@ import { RootStackParamList, RootTabParamList } from "./types/type";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
-//Tạo các 4 tab
+// 🧭 Tạo 4 tab
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -27,18 +31,15 @@ function MainTabs() {
         tabBarActiveTintColor: "#007bff",
         tabBarInactiveTintColor: "gray",
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName = "";
 
           if (route.name === "Home")
-            iconName = focused ? "home" : "home-outline";
-          else if (route.name === "MyCourse")
-            iconName = focused ? "book" : "book-outline";
-          else if (route.name === "Course_Searching")
-            iconName = focused ? "search" : "search-outline";
-          else if (route.name === "UserProfile")
-            iconName = focused ? "person" : "person-outline";
-
-          return <Ionicons name={iconName} size={size} color={color} />;
+            return <TiHomeOutline size={size} color={color} />;
+          if (route.name === "MyCourse")
+            return <PiBookOpenLight size={size} color={color} />;
+          if (route.name === "Course_Searching")
+            return <GoSearch size={size} color={color} />;
+          if (route.name === "UserProfile")
+            return <CiUser size={size} color={color} />;
         },
       })}
     >
@@ -50,7 +51,7 @@ function MainTabs() {
   );
 }
 
-//Các stack chính
+// Stack chính
 export default function App() {
   return (
     <SafeAreaProvider>
