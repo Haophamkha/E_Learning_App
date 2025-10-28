@@ -9,7 +9,7 @@ type Props = NativeStackScreenProps<RootTabParamList, "UserProfile">;
 export const UserProfileScreen = ({ navigation }: Props) => {
   return (
     <SafeAreaView>
-      <Text>UserProfile</Text>
+      <Text>UserProfile aaaa</Text>
     </SafeAreaView>
   );
 };
