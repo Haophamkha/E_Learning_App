@@ -18,6 +18,7 @@ import { Course_ListingScreen } from "./screens/Course_ListingScreen";
 import { LearningScreen } from "./screens/LearningScreen";
 import { TeacherProfileScreen } from "./screens/TeacherProfileScreen";
 import { RootStackParamList, RootTabParamList } from "./types/type";
+import { LessonDetailScreen } from "./screens/LessonDetailScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -81,6 +82,11 @@ export default function App() {
             name="TeacherProfile"
             component={TeacherProfileScreen}
             options={{ title: "Hồ sơ giảng viên" }}
+          />
+          <Stack.Screen
+            name="LessonDetail"
+            component={LessonDetailScreen}
+            options={{ title: "Chi tiết bài học" }}
           />
         </Stack.Navigator>
       </NavigationContainer>
