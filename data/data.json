@@ -1,5 +1,4 @@
 {
-  
   "teachers": [
     {
       "id": 1,
@@ -274,7 +273,7 @@
       "voteCount": 152,
       "category": "Code",
       "duration": "3h 25m",
-      "description": "Khóa học hướng dẫn lập trình di động đa nền tảng bằng React Native từ cơ bản đến thực hành.",
+      "description": "Khóa học hướng dẫn lập trình di động đa nền tảng bằng React Native từ cơ bản đến thực hành.Khóa học hướng dẫn lập trình di động đa nền tảng bằng React Native từ cơ bản đến thực hành.Khóa học hướng dẫn lập trình di động đa nền tảng bằng React Native từ cơ bản đến thực hành.Khóa học hướng dẫn lập trình di động đa nền tảng bằng React Native từ cơ bản đến thực hành.Khóa học hướng dẫn lập trình di động đa nền tảng bằng React Native từ cơ bản đến thực hành.Khóa học hướng dẫn lập trình di động đa nền tảng bằng React Native từ cơ bản đến thực hành.Khóa học hướng dẫn lập trình di động đa nền tảng bằng React Native từ cơ bản đến thực hành.Khóa học hướng dẫn lập trình di động đa nền tảng bằng React Native từ cơ bản đến thực hành.",
       "lessonCount": 6,
       "image": "https://picsum.photos/seed/course101/600/400",
       "project": {
@@ -2988,6 +2987,7 @@
       "job": "Sinh viên CNTT",
       "image": "https://randomuser.me/api/portraits/men/1.jpg",
       "savedCourseList": [101, 103, 105, 107, 109],
+      "cart": [101, 104, 108],
       "userName": "nguyenvana",
       "password": "123456",
       "purchaseCourse": {
@@ -3003,6 +3003,7 @@
       "job": "Nhân viên kế toán",
       "image": "https://randomuser.me/api/portraits/women/2.jpg",
       "savedCourseList": [102, 104, 106, 108, 110],
+      "cart": [103, 107, 109],
       "userName": "tranthib",
       "password": "abcdef",
       "purchaseCourse": {
@@ -3018,6 +3019,7 @@
       "job": "Freelancer thiết kế",
       "image": "https://randomuser.me/api/portraits/men/3.jpg",
       "savedCourseList": [111, 112, 113, 114, 115],
+      "cart": [111, 116, 118],
       "userName": "leminhc",
       "password": "pass123",
       "purchaseCourse": {
@@ -3032,6 +3034,7 @@
       "job": "Giáo viên tiếng Anh",
       "image": "https://randomuser.me/api/portraits/women/4.jpg",
       "savedCourseList": [116, 117, 118, 119, 120],
+      "cart": [117, 119, 120],
       "userName": "phamthid",
       "password": "qwerty",
       "purchaseCourse": {
@@ -3046,6 +3049,7 @@
       "job": "Lập trình viên backend",
       "image": "https://randomuser.me/api/portraits/men/5.jpg",
       "savedCourseList": [121, 122, 123, 124, 125],
+      "cart": [121, 126, 127],
       "userName": "dovane",
       "password": "654321",
       "purchaseCourse": {
@@ -3060,6 +3064,7 @@
       "job": "Tester phần mềm",
       "image": "https://randomuser.me/api/portraits/women/6.jpg",
       "savedCourseList": [126, 127, 128, 129, 130],
+      "cart": [126, 127, 128],
       "userName": "ngothif",
       "password": "987654",
       "purchaseCourse": {
@@ -3074,6 +3079,7 @@
       "job": "Kỹ sư phần mềm",
       "image": "https://randomuser.me/api/portraits/men/7.jpg",
       "savedCourseList": [101, 102, 103, 104],
+      "cart": [101, 103, 105],
       "userName": "phanvang",
       "password": "123abc",
       "purchaseCourse": {
@@ -3088,6 +3094,7 @@
       "job": "Sinh viên Kinh tế",
       "image": "https://randomuser.me/api/portraits/women/8.jpg",
       "savedCourseList": [105, 106, 107],
+      "cart": [106, 107, 108],
       "userName": "vuthih",
       "password": "pass789",
       "purchaseCourse": {
@@ -3101,6 +3108,7 @@
       "job": "QA Engineer",
       "image": "https://randomuser.me/api/portraits/men/9.jpg",
       "savedCourseList": [108, 109, 110, 111],
+      "cart": [108, 110, 111],
       "userName": "nguyenvani",
       "password": "i321654",
       "purchaseCourse": {
@@ -3114,6 +3122,7 @@
       "job": "UI/UX Designer",
       "image": "https://randomuser.me/api/portraits/women/10.jpg",
       "savedCourseList": [112, 113, 114, 115],
+      "cart": [112, 113, 115],
       "userName": "tranthij",
       "password": "uxdesign",
       "purchaseCourse": {

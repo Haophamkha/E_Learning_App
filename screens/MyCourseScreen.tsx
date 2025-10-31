@@ -124,7 +124,7 @@ export const MyCourseScreen = () => {
             </TouchableOpacity>
           </View>
           <Image
-            source={require("../assets/teacher.jpg")}
+            source={require("../assets/teacher.png")}
             style={styles.bannerImg}
           />
         </View>
@@ -156,7 +156,7 @@ export const MyCourseScreen = () => {
             <MyCourseCard
               key={course.id}
               course={course}
-              onPress={() => navigation.navigate("Course_Detail", { course })}
+              onPress={() => navigation.navigate("Course_Detail", { course, users: [], courses: [] , teachers: [] })}
             />
           ))
         ) : (
@@ -199,12 +199,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignItems: "center",
   },
-  bannerText: { flex: 1 },
+  bannerText: {
+    flex: 3,
+    marginRight: 8,
+  },
   bannerTitle: {
     color: "#fff",
     fontSize: 25,
     fontWeight: "bold",
     marginBottom: 4,
+    paddingBottom: 20,
   },
   joinBtn: {
     backgroundColor: "#fff",
@@ -215,10 +219,11 @@ const styles = StyleSheet.create({
   },
   joinText: { color: "#00BCD4", fontWeight: "bold", fontSize: 20 },
   bannerImg: {
-    width: 80,
-    height: 80,
+    flex: 1,
+    maxWidth: 150,
+    height: 130,
     borderRadius: 12,
     resizeMode: "cover",
-    marginLeft: 12,
+    marginRight: 20,
   },
 });

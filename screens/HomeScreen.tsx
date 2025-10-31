@@ -38,7 +38,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
   const [teachers, setTeachers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [users, setUsers] = useState<any[]>([]);
   //Viết tạm
   const [showNotifications, setShowNotifications] = useState(false);
   const notifications = [
@@ -68,12 +68,14 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [courseData, teacherData] = await Promise.all([
+        const [courseData, teacherData, userData] = await Promise.all([
           getData("/courses"),
           getData("/teachers"),
+          getData("/users"),
         ]);
         setCourses(courseData || []);
         setTeachers(teacherData || []);
+        setUsers(userData || []);
       } catch (err: any) {
         setError("Không thể tải dữ liệu!");
       } finally {
@@ -101,7 +103,12 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
 
           <View style={styles.iconContainer}>
             <TouchableOpacity
-              onPress={() => navigation.navigate("Cart")}
+              onPress={() =>
+                navigation.navigate("Cart", {
+                  courses,
+                  user: users && users.length > 0 ? users[0] : { cart: [] }, 
+                })
+              }
             >
               <CiShoppingCart color="white" size={30} />
             </TouchableOpacity>
@@ -126,7 +133,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
           </View>
 
           <Image
-            source={require("../assets/teacher.jpg")}
+            source={require("../assets/teacher.png")}
             style={styles.bannerImg}
           />
         </View>
@@ -139,7 +146,14 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
               key={course.id}
               course={course}
               teachers={teachers}
-              onPress={() => navigation.navigate("Course_Detail", { course })}
+              onPress={() =>
+                navigation.navigate("Course_Detail", {
+                  course,
+                  teachers,
+                  courses,
+                  users,
+                })
+              }
             />
           ))}
         </SectionBlock>
@@ -150,7 +164,14 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
               key={course.id}
               course={course}
               teachers={teachers}
-              onPress={() => navigation.navigate("Course_Detail", { course })}
+              onPress={() =>
+                navigation.navigate("Course_Detail", {
+                  course,
+                  teachers,
+                  courses,
+                  users,
+                })
+              }
             />
           ))}
         </SectionBlock>
@@ -161,7 +182,14 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
               key={course.id}
               course={course}
               teachers={teachers}
-              onPress={() => navigation.navigate("Course_Detail", { course })}
+              onPress={() =>
+                navigation.navigate("Course_Detail", {
+                  course,
+                  teachers,
+                  courses,
+                  users,
+                })
+              }
             />
           ))}
         </SectionBlockInspires>
@@ -201,7 +229,6 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
   );
 };
 
-// STYLES
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -266,10 +293,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   bannerImg: {
-    width: 90,
-    height: 90,
+    width: 200,
+    height: 150,
     marginLeft: 10,
+    marginRight: 10,
     resizeMode: "contain",
+    paddingBottom : 0,
   },
   container: {
     padding: 16,

@@ -86,11 +86,19 @@ export interface User {
 
 export type RootStackParamList = {
   MainTabs: undefined;
-  Course_Detail: { course: Course };
+  Course_Detail: {
+    course: Course;
+    teachers: Teacher[];
+    courses?: Course[];
+    users?: User[];
+  };
   Course_Listing: undefined;
   Learning: undefined;
   TeacherProfile: { teacher: Teacher; courses: Course[] };
-  Cart: undefined;
+  Cart: {
+    courses: any[];
+    user: any;
+  };
 };
 
 export type RootTabParamList = {

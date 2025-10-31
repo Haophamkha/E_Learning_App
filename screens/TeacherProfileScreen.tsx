@@ -20,14 +20,13 @@ export const TeacherProfileScreen = ({ route }: Props) => {
   const { teacher, courses = [] } = route.params;
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>("OVERVIEW");
 
-  // Lọc ra courses của teacher này
   const teacherCourses = courses.filter(
     (course) => course.teacherId === teacher.id
   );
 
   return (
     <View style={styles.container}>
-      {/* Header background */}
+
       <View style={styles.headerBackground}>
         <Image
           source={{
@@ -38,12 +37,10 @@ export const TeacherProfileScreen = ({ route }: Props) => {
         />
       </View>
 
-      {/* Avatar */}
       <View style={styles.avatarWrapper}>
         <Image source={{ uri: teacher.image }} style={styles.avatar} />
       </View>
 
-      {/* Teacher info */}
       <View style={styles.infoContainer}>
         <View
           style={{
@@ -84,7 +81,6 @@ export const TeacherProfileScreen = ({ route }: Props) => {
         ))}
       </View>
 
-      {/* Tab content */}
       <View style={{ flex: 1 }}>
         {activeTab === "OVERVIEW" && (
           <ScrollView style={{ paddingHorizontal: 16 }}>
@@ -139,7 +135,6 @@ export const TeacherProfileScreen = ({ route }: Props) => {
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
   headerBackground: {
