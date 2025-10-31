@@ -31,6 +31,7 @@ export interface Review {
 }
 
 export interface Course {
+  userId: number;
   id: number;
   name: string;
   teacherId: number;
@@ -93,17 +94,24 @@ export type RootStackParamList = {
     users?: User[];
   };
   Course_Listing: undefined;
-  Learning: undefined;
+  Learning: { learning: Course,updatedLesson?: Lesson };
   TeacherProfile: { teacher: Teacher; courses: Course[] };
   Cart: {
     courses: any[];
     user: any;
   };
+  
+  LessonDetail: {
+  title: string;
+  lesson: Lesson;
+  learning: Course;
+  onLessonComplete?: (lesson: Lesson) => void;
+};
 };
 
 export type RootTabParamList = {
   Home: undefined;
   MyCourse: undefined;
   Course_Searching: undefined;
-  UserProfile: undefined;
+  UserProfile: {user: User; courses: Course[],teacher: Teacher[]};
 };

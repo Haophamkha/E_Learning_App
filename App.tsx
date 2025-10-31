@@ -19,6 +19,7 @@ import { LearningScreen } from "./screens/LearningScreen";
 import { TeacherProfileScreen } from "./screens/TeacherProfileScreen";
 import { CartScreen } from "./screens/CartScreen";
 import { RootStackParamList, RootTabParamList } from "./types/type";
+import { LessonDetailScreen } from "./screens/LessonDetailScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -87,6 +88,11 @@ export default function App() {
             name="Cart"
             component={CartScreen}
             options={{ title: "Giỏ hàng" }}
+          />
+          <Stack.Screen
+            name="LessonDetail"
+            component={LessonDetailScreen}
+            options={{ title: "Chi tiết bài học" }}
           />
         </Stack.Navigator>
       </NavigationContainer>

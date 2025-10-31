@@ -218,7 +218,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
 
           <Button
             mode="contained"
-            onPress={() => navigation.navigate("Learning")}
+            onPress={() => navigation.navigate("Learning", { learning: courses[0] })}
             style={styles.btn}
           >
             Đến Learning
