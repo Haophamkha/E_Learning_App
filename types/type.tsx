@@ -25,9 +25,9 @@ export interface QA {
 
 export interface Review {
   userId: number;
-  postDate: string; 
+  postDate: string;
   content: string;
-  vote: number; 
+  vote: number;
 }
 
 export interface Course {
@@ -39,6 +39,8 @@ export interface Course {
   discount?: number;
   vote: number;
   voteCount: number;
+  like: number;
+  share: number;
   category: string;
   duration?: string;
   description?: string;
@@ -49,8 +51,6 @@ export interface Course {
   QA?: QA[];
   reviews?: Review[];
 }
-
-
 
 export interface Teacher {
   id: number;
@@ -66,11 +66,9 @@ export interface Teacher {
   voteCount?: number;
 }
 
-
-
 export interface UserCourseProgress {
   [courseId: string]: {
-    time_watched: number; 
+    time_watched: number;
   };
 }
 
@@ -89,29 +87,21 @@ export type RootStackParamList = {
   MainTabs: undefined;
   Course_Detail: {
     course: Course;
-    teachers: Teacher[];
+    teachers?: Teacher[];
     courses?: Course[];
     users?: User[];
   };
-  Course_Listing: undefined;
-  Learning: { learning: Course,updatedLesson?: Lesson };
+  Course_Listing: { keyword?: string; category?: string };
+  Learning: { learning: Course }; // 🔹 Xoá updatedLesson, LessonDetail không còn dùng
   TeacherProfile: { teacher: Teacher; courses: Course[] };
-  Cart: {
-    courses: any[];
-    user: any;
-  };
-  
-  LessonDetail: {
-  title: string;
-  lesson: Lesson;
-  learning: Course;
-  onLessonComplete?: (lesson: Lesson) => void;
-};
+  Cart: { courses: Course[]; user: User };
+  LoginScreen: undefined;
+  RegisterScreen: undefined;
 };
 
 export type RootTabParamList = {
   Home: undefined;
   MyCourse: undefined;
   Course_Searching: undefined;
-  UserProfile: {user: User; courses: Course[],teacher: Teacher[]};
+  UserProfile: { user: User; courses: Course[]; teacher: Teacher[] };
 };

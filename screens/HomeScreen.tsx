@@ -23,10 +23,13 @@ import { SectionBlock } from "../components/SectionBlock";
 import { CourseCard } from "../components/CourseCard";
 import { TeacherCard } from "../components/TeacherCard";
 import { InspiresCourse } from "../components/InspiresCourse";
+import { LoginScreen } from "./LoginScreen";
+import { RegisterScreen } from "./RegisterScreen";
 import { SectionBlockInspires } from "../components/SectionBlockInspires";
 import { useEffect, useState } from "react";
 import { getData } from "../hooks/useFetch";
 import { NotificationModal } from "../components/NotificationModal";
+import { useAuth } from "../contexts/AuthContext";
 
 type HomeNavProp = CompositeNavigationProp<
   BottomTabNavigationProp<RootTabParamList, "Home">,
@@ -39,6 +42,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [users, setUsers] = useState<any[]>([]);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   //Viết tạm
   const [showNotifications, setShowNotifications] = useState(false);
   const notifications = [
@@ -102,24 +106,51 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
           </View>
 
           <View style={styles.iconContainer}>
+
+            {/* Cart */}
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate("Cart", {
                   courses,
-                  user: users && users.length > 0 ? users[0] : { cart: [] }, 
+                  user: users && users.length > 0 ? users[0] : { cart: [] },
                 })
               }
             >
               <CiShoppingCart color="white" size={30} />
             </TouchableOpacity>
 
+            {/* Notification */}
             <TouchableOpacity
               style={{ marginLeft: 16 }}
               onPress={() => setShowNotifications(true)}
             >
               <IoIosNotificationsOutline color="white" size={30} />
             </TouchableOpacity>
-          </View>
+
+            {/* Avatar + Dropdown */}
+            <View style={{ marginLeft: 16 }}>
+              <TouchableOpacity onPress={() => setShowUserMenu(!showUserMenu)}>
+                <Image
+                  source={require("../assets/avt.jpg")}
+                  style={styles.avatar}
+                />
+              </TouchableOpacity>
+
+              {/* Menu đổ xuống */}
+              {showUserMenu && (
+                <View style={styles.dropdownMenu}>
+                  <TouchableOpacity onPress={() => {
+                    setShowUserMenu(false);
+                    navigation.navigate("LoginScreen");
+                  }}>
+                    <Text style={styles.dropdownItem}>Login</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+</View>
+
+
         </View>
 
         {/* Banner */}
@@ -208,13 +239,13 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
 
         {/* Navigation Buttons */}
         <View style={styles.container}>
-          <Button
+          {/* <Button
             mode="contained"
             onPress={() => navigation.navigate("Course_Listing")}
             style={styles.btn}
           >
             Đến Course Listing
-          </Button>
+          </Button> */}
 
           <Button
             mode="contained"
@@ -311,4 +342,47 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     paddingRight: 16,
   },
+  authBtn: {
+  marginLeft: 16,
+  borderWidth: 1,
+  borderColor: "#fff",
+  paddingVertical: 4,
+  paddingHorizontal: 10,
+  borderRadius: 6,
+},
+
+authText: {
+  color: "#fff",
+  fontSize: 12,
+  fontWeight: "600",
+},
+avatar: {
+  width: 34,
+  height: 34,
+  borderRadius: 17,
+  borderWidth: 1,
+  borderColor: "#fff",
+},
+
+dropdownMenu: {
+  position: "absolute",
+  top: 40,
+  right: 0,
+  backgroundColor: "#fff",
+  borderRadius: 6,
+  paddingVertical: 6,
+  width: 120,
+  elevation: 5, // Android shadow
+  shadowColor: "#000",
+  shadowOpacity: 0.2,
+  shadowOffset: { width: 0, height: 3 },
+},
+
+dropdownItem: {
+  paddingVertical: 8,
+  paddingHorizontal: 12,
+  fontSize: 14,
+  color: "#333",
+}
+
 });

@@ -19,15 +19,20 @@ import { LearningScreen } from "./screens/LearningScreen";
 import { TeacherProfileScreen } from "./screens/TeacherProfileScreen";
 import { CartScreen } from "./screens/CartScreen";
 import { RootStackParamList, RootTabParamList } from "./types/type";
-import { LessonDetailScreen } from "./screens/LessonDetailScreen";
+// import { LoginScreen } from "./screens/LoginScreen";
+import { AuthProvider } from "./contexts/AuthContext";
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
+
+
 // 🧭 Tạo 4 tab
 function MainTabs() {
   return (
-    <Tab.Navigator
+    <Tab.Navigator 
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: "#007bff",
@@ -56,8 +61,10 @@ function MainTabs() {
 // Stack chính
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
+    
+      <AuthProvider>
+        <SafeAreaProvider>
+          <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
             name="MainTabs"
@@ -72,7 +79,7 @@ export default function App() {
           <Stack.Screen
             name="Course_Listing"
             component={Course_ListingScreen}
-            options={{ title: "Danh sách khóa học" }}
+            options={{title: "Danh sách khóa học" }}
           />
           <Stack.Screen
             name="Learning"
@@ -90,12 +97,18 @@ export default function App() {
             options={{ title: "Giỏ hàng" }}
           />
           <Stack.Screen
-            name="LessonDetail"
-            component={LessonDetailScreen}
-            options={{ title: "Chi tiết bài học" }}
+            name="LoginScreen"
+            component={LoginScreen}
+            options={{ title: "Đăng nhập tài khoản" }}
+          />
+          <Stack.Screen
+            name="RegisterScreen"
+            component={RegisterScreen}
+            options={{ title: "Tạo tài khoản" }}
           />
         </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </AuthProvider>
   );
 }

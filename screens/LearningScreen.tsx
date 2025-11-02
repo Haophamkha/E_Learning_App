@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,69 +6,49 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList, Chapter, Lesson, User } from "../types/type";
+import { RootStackParamList } from "../types/type";
 import { FaRegHeart, FaShareAlt } from "react-icons/fa";
-import { useFocusEffect } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { TiTick } from "react-icons/ti";
+import { IoPlayOutline } from "react-icons/io5";
+import { MdOutlineLock } from "react-icons/md";
 import data from "../data/data.json";
-
-
 
 type Props = NativeStackScreenProps<RootStackParamList, "Learning">;
 
 const tabs = ["LESSONS", "PROJECTS", "Q&A"] as const;
-const {users} = data;
+const { users } = data;
 
-export const LearningScreen = ({ route, navigation }: Props) => {
+export const LearningScreen = ({ route }: Props) => {
   const { learning } = route.params;
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>("LESSONS");
-  const [chapters, setChapters] = useState<Chapter[]>(learning.chapters || []);
+  const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
 
-  // 🔹 Load tiến trình khi mở màn hình
-  useEffect(() => {
-    const loadProgress = async () => {
-      try {
-        const saved = await AsyncStorage.getItem(`course_${learning.id}`);
-        if (saved) {
-          setChapters(JSON.parse(saved));
-        }
-      } catch (err) {
-        console.error("❌ Lỗi khi load tiến trình:", err);
-      }
+  const romanNumerals = [
+    "I", "II", "III", "IV", "V",
+    "VI", "VII", "VIII", "IX", "X",
+  ];
+
+  const [newComment, setNewComment] = useState(""); // state cho comment mới
+  const [qaList, setQaList] = useState(learning.QA || []); // state QA hiện tại
+
+  const handleAddComment = () => {
+    if (!newComment.trim()) return; // không thêm comment rỗng
+    const newQA = {
+      userId: 0, // giả sử user hiện tại là admin
+      postDate: new Date().toLocaleDateString(),
+      content: newComment,
+      like: 0,
+      commentCount: 0,
     };
-    loadProgress();
-  }, []);
-
-  // 🔹 Cập nhật khi quay lại từ LessonDetail
-  useFocusEffect(
-    useCallback(() => {
-      if (route.params?.updatedLesson) {
-        const updatedLesson = route.params.updatedLesson;
-        setChapters((prev) => {
-          const updated = prev.map((chapter) => ({
-            ...chapter,
-            lessons: chapter.lessons.map((lesson) =>
-              lesson.id === updatedLesson.id ? updatedLesson : lesson
-            ),
-          }));
-          AsyncStorage.setItem(`course_${learning.id}`, JSON.stringify(updated));
-          return updated;
-        });
-      }
-    }, [route.params?.updatedLesson])
-  );
-
-  const handleLessonPress = (lesson: Lesson) => {
-    navigation.navigate("LessonDetail", {
-      title: lesson.title,
-      lesson,
-      learning: { ...learning, chapters },
-    });
+    setQaList([newQA, ...qaList]); // thêm comment mới lên đầu
+    setNewComment(""); // reset input
   };
+
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -83,29 +63,23 @@ export const LearningScreen = ({ route, navigation }: Props) => {
 
           <View style={styles.iconRow}>
             <FaRegHeart color="#ff0000ff" />
-            <Text style={styles.likeCount}>.... Like</Text>
+            <Text style={styles.likeCount}> {learning.like} Like</Text>
             <Text style={styles.dot}>•</Text>
             <FaShareAlt color="#1100ffff" />
-            <Text style={styles.likeCount}>.... Share</Text>
+            <Text style={styles.likeCount}> {learning.share} Share</Text>
           </View>
         </View>
 
-        {/* Tabs */}
+        {/* Tabs  */}
         <View style={styles.tabContainer}>
           {tabs.map((tab) => (
             <TouchableOpacity
               key={tab}
-              style={[
-                styles.tabItem,
-                activeTab === tab && styles.tabItemActive,
-              ]}
+              style={[styles.tabItem, activeTab === tab && styles.tabItemActive]}
               onPress={() => setActiveTab(tab)}
             >
               <Text
-                style={[
-                  styles.tabText,
-                  activeTab === tab && styles.tabTextActive,
-                ]}
+                style={[styles.tabText, activeTab === tab && styles.tabTextActive]}
               >
                 {tab}
               </Text>
@@ -115,100 +89,60 @@ export const LearningScreen = ({ route, navigation }: Props) => {
 
         {/* LESSONS */}
         {activeTab === "LESSONS" && (
-          <View style={styles.tabContent}>
-            <Text style={styles.sectionTitle}>Lessons</Text>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {learning.chapters?.map((chapter, chapterIndex) => (
+              <View key={chapter.order} style={{ marginBottom: 10 }}>
+                {/* Tiêu đề chương */}
+                <View style={styles.chapterHeader}>
+                  <Text style={styles.chapterTitle}>
+                    {`Chương ${romanNumerals[chapterIndex] || chapterIndex + 1}: ${chapter.title}`}
+                  </Text>
+                </View>
 
-            {chapters.map((chapter, idx) => (
-              <View key={idx} style={styles.chapterBlock}>
-                <Text style={styles.chapterTitle}>
-                  {chapter.order}. {chapter.title}
-                </Text>
-
+                {/* Danh sách bài học */}
                 {chapter.lessons.map((lesson, index) => {
-                  const isDisabled = lesson.status === "not_started";
-
+                  const isSelected = selectedLessonId === lesson.id;
                   return (
                     <TouchableOpacity
                       key={lesson.id}
-                      disabled={isDisabled}
                       style={[
-                        styles.lessonItem,
-                        lesson.status === "inprogress" &&
-                          styles.lessonItemInProgress,
-                        lesson.status === "completed" &&
-                          styles.lessonItemCompleted,
-                        isDisabled && styles.lessonItemDisabled,
+                        styles.lessonRow,
+                        isSelected && styles.lessonRowSelected,
                       ]}
-                      onPress={() => !isDisabled && handleLessonPress(lesson)}
+                      activeOpacity={0.8}
+                      onPress={() => setSelectedLessonId(lesson.id)}
                     >
-                      <Text
-                        style={[
-                          styles.lessonIndex,
-                          isDisabled && { color: "#999" },
-                          lesson.status === "inprogress" && { color: "#00BCD4" },
-                        ]}
-                      >
-                        {(index + 1).toString().padStart(2, "0")}
+                      <Text style={styles.lessonIndex}>
+                        {index + 1 < 10 ? `0${index + 1}` : index + 1}
                       </Text>
 
-                      <View style={styles.lessonContent}>
+                      <View style={{ flex: 1 }}>
                         <Text
                           style={[
                             styles.lessonTitle,
-                            isDisabled && { color: "#999" },
+                            isSelected && styles.lessonTitleSelected,
                           ]}
                         >
                           {lesson.title}
                         </Text>
-                        <Text
-                          style={[
-                            styles.lessonDuration,
-                            isDisabled && { color: "#aaa" },
-                          ]}
-                        >
-                          {lesson.duration}
-                        </Text>
+                        <Text style={styles.lessonDuration}>{lesson.duration}</Text>
                       </View>
 
                       {lesson.status === "completed" && (
-                        <Ionicons
-                          name="checkmark"
-                          size={18}
-                          color="#00C853"
-                          style={{ marginLeft: 6 }}
-                        />
+                        <TiTick size={20} color="#0055FF" />
                       )}
                       {lesson.status === "inprogress" && (
-                        <Ionicons
-                          name="play"
-                          size={18}
-                          color="#00BCD4"
-                          style={{ marginLeft: 6 }}
-                        />
+                        <IoPlayOutline size={20} color="#00BCD4" />
+                      )}
+                      {lesson.status === "not_started" && (
+                        <MdOutlineLock size={20} color="#AAA" />
                       )}
                     </TouchableOpacity>
                   );
                 })}
               </View>
             ))}
-
-            <View style={{ marginTop: 16 }}>
-              <TouchableOpacity
-                onPress={async () => {
-                  try {
-                    await AsyncStorage.removeItem(`course_${learning.id}`);
-                    setChapters(learning.chapters || []); // 🔄 reset về data gốc
-                    alert("🔁 Đã reset tiến trình học!");
-                  } catch (err) {
-                    console.error("❌ Lỗi khi reset:", err);
-                  }
-                }}
-                style={styles.resetButton}
-              >
-                <Text style={styles.resetText}>Reset Progress</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          </ScrollView>
         )}
 
         {/* PROJECTS */}
@@ -216,7 +150,7 @@ export const LearningScreen = ({ route, navigation }: Props) => {
           <View style={styles.tabContent}>
             <Text style={styles.sectionTitle}>Projects</Text>
             <Text style={styles.sectionText}>
-              Project details will be displayed here soon.
+              Các bài tập / dự án thực hành sẽ được hiển thị ở đây.
             </Text>
           </View>
         )}
@@ -226,14 +160,11 @@ export const LearningScreen = ({ route, navigation }: Props) => {
           <View style={styles.tabContent}>
             <Text style={styles.sectionTitle}>Question & Answer</Text>
 
-            {learning.QA && learning.QA.length > 0 ? (
-              learning.QA.map((item, index) => {
-                // 🔹 Lấy thông tin user từ learning.users (nếu có)
+            {qaList.length > 0 ? (
+              qaList.map((item, index) => {
                 const user = users.find((u) => u.id === item.userId);
-
                 return (
                   <View key={index} style={styles.qaCard}>
-                    {/* Header */}
                     <View style={styles.qaHeader}>
                       <Image
                         source={{
@@ -249,10 +180,8 @@ export const LearningScreen = ({ route, navigation }: Props) => {
                       </View>
                     </View>
 
-                    {/* Nội dung Q&A */}
                     <Text style={styles.qaContent}>{item.content}</Text>
 
-                    {/* Like + Comment */}
                     <View style={styles.qaFooter}>
                       <TouchableOpacity style={styles.qaStat}>
                         <Ionicons name="heart-outline" size={18} color="#ff4081" />
@@ -270,6 +199,17 @@ export const LearningScreen = ({ route, navigation }: Props) => {
             ) : (
               <Text style={styles.sectionText}>Chưa có câu hỏi nào.</Text>
             )}
+            <View style={styles.commentInputContainer}>
+              <TextInput
+                style={styles.commentInput}
+                placeholder="Question..."
+                value={newComment}
+                onChangeText={setNewComment}
+              />
+              <TouchableOpacity style={styles.sendButton} onPress={handleAddComment}>
+                <Text style={styles.sendButtonText}>Gửi</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       </ScrollView>
@@ -277,16 +217,9 @@ export const LearningScreen = ({ route, navigation }: Props) => {
   );
 };
 
+/* Styles */
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#fff" },
-  resetButton: {
-    backgroundColor: "#ff6b6b",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginHorizontal: 16,
-  },
-  resetText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
   header: { alignItems: "center", padding: 16 },
   courseImage: { width: "100%", height: 220, borderRadius: 12 },
   courseTitle: {
@@ -299,6 +232,7 @@ const styles = StyleSheet.create({
   iconRow: { flexDirection: "row", marginTop: 12, gap: 16 },
   likeCount: { fontSize: 15, color: "#000000ff", marginHorizontal: 6 },
   dot: { fontSize: 18, color: "#888", marginHorizontal: 4 },
+
   tabContainer: {
     flexDirection: "row",
     borderBottomWidth: 1,
@@ -311,17 +245,18 @@ const styles = StyleSheet.create({
   tabContent: { marginTop: 20, paddingHorizontal: 16 },
   sectionTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 6 },
   sectionText: { fontSize: 15, color: "#555", marginBottom: 10 },
-  chapterBlock: { marginTop: 16 },
+
+  chapterHeader: { paddingVertical: 8 },
   chapterTitle: {
     fontSize: 17,
     fontWeight: "600",
     marginBottom: 8,
     color: "#333",
   },
-  lessonItem: {
+
+  lessonRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#eee",
@@ -330,18 +265,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 8,
   },
-  lessonItemInProgress: {
-    backgroundColor: "#E0F7FA",
+  lessonRowSelected: {
     borderColor: "#00BCD4",
-  },
-  lessonItemCompleted: {
-    backgroundColor: "#fff",
-    borderColor: "#eee",
-  },
-  lessonItemDisabled: {
-    backgroundColor: "#F3F3F3",
-    borderColor: "#ddd",
-    opacity: 0.6,
+    backgroundColor: "#E0F7FA",
   },
   lessonIndex: {
     fontSize: 16,
@@ -349,41 +275,62 @@ const styles = StyleSheet.create({
     color: "#00BCD4",
     width: 28,
   },
-  lessonContent: { flex: 1, marginLeft: 10 },
   lessonTitle: { fontSize: 16, fontWeight: "500", color: "#222" },
+  lessonTitleSelected: { color: "#00BCD4" },
   lessonDuration: { fontSize: 13, color: "#666" },
-  qaCard: {
-  backgroundColor: "#fff",
-  borderRadius: 12,
-  padding: 14,
-  marginBottom: 12,
-  shadowColor: "#000",
-  shadowOpacity: 0.05,
-  shadowRadius: 4,
-  elevation: 2,
-  borderWidth: 1,
-  borderColor: "#f0f0f0",
-},
-qaHeader: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
-qaAvatar: { width: 40, height: 40, borderRadius: 20 },
-qaUser: { fontSize: 15, fontWeight: "bold", color: "#222" },
-qaJob: { fontSize: 13, color: "#666", marginTop: 2 },
-qaDate: { fontSize: 12, color: "#999", marginTop: 2 },
-qaContent: {
-  fontSize: 15,
-  color: "#333",
-  lineHeight: 20,
-  marginBottom: 10,
-},
-qaFooter: {
-  flexDirection: "row",
-  alignItems: "center",
-  marginTop: 4,
-  gap: 20,
-},
-qaStat: { flexDirection: "row", alignItems: "center" },
-qaStatText: { fontSize: 14, color: "#555", marginLeft: 6 },
 
+  qaCard: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#f0f0f0",
+  },
+  qaHeader: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
+  qaAvatar: { width: 40, height: 40, borderRadius: 20 },
+  qaUser: { fontSize: 15, fontWeight: "bold", color: "#222" },
+  qaDate: { fontSize: 12, color: "#999", marginTop: 2 },
+  qaContent: {
+    fontSize: 15,
+    color: "#333",
+    lineHeight: 20,
+    marginBottom: 10,
+  },
+  qaFooter: { flexDirection: "row", alignItems: "center", gap: 20 },
+  qaStat: { flexDirection: "row", alignItems: "center" },
+  qaStatText: { fontSize: 14, color: "#555", marginLeft: 6 },
+  commentInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    marginTop: 10,
+  },
+  commentInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    fontSize: 14,
+  },
+  sendButton: {
+    marginLeft: 8,
+    backgroundColor: "#00BCD4",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  sendButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
 });
 
 export default LearningScreen;
