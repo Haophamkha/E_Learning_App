@@ -81,6 +81,7 @@ export interface User {
   userName: string;
   password: string;
   purchaseCourse: UserCourseProgress;
+  cart: number[];
 }
 
 export type RootStackParamList = {

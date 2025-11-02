@@ -14,8 +14,10 @@ type Props = NativeStackScreenProps<RootStackParamList, "Cart">;
 
 export const CartScreen = ({ navigation, route }: Props) => {
   const { courses = [], user = { cart: [] } } = route.params || {};
-  const cartIds = user.cart || [];
-  const cartCourses = courses.filter((course) => cartIds.includes(course.id));
+  const cartIds = (user.cart || []) as number[];
+  const cartCourses = courses.filter((course: any) =>
+    cartIds.includes(course.id)
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
