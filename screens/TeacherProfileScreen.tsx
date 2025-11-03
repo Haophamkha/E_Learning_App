@@ -10,23 +10,32 @@ import {
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SectionBlock } from "../components/SectionBlock";
 import { CourseCard } from "../components/CourseCard";
-import { RootStackParamList, Teacher, Course } from "../types/type";
+import { RootStackParamList } from "../types/type";
+
+import { useSelector } from "react-redux";
+import { RootState } from "../auth/store";
 
 type Props = NativeStackScreenProps<RootStackParamList, "TeacherProfile">;
 
 const tabs = ["OVERVIEW", "COURSES", "REVIEW"] as const;
 
 export const TeacherProfileScreen = ({ route }: Props) => {
-  const { teacher, courses = [] } = route.params;
+  const { teacher } = route.params;
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>("OVERVIEW");
 
-  const teacherCourses = courses.filter(
-    (course) => course.teacherId === teacher.id
+  const allCourses = useSelector((state: RootState) => state.data.courses);
+
+  const teacherCourses = allCourses.filter(
+    (course) => String(course.teacherId) === String(teacher.id)
+  );
+  console.log(
+    `Courses for teacher ${teacher.name} (${teacher.id}):`,
+    teacherCourses
   );
 
   return (
     <View style={styles.container}>
-
+      {/* Header & Avatar */}
       <View style={styles.headerBackground}>
         <Image
           source={{
@@ -54,7 +63,6 @@ export const TeacherProfileScreen = ({ route }: Props) => {
             <Text style={styles.labelTeacherText}>Teacher</Text>
           </View>
         </View>
-
         <Text style={styles.jobText}>{teacher.Job}</Text>
         <Text style={styles.locationText}>
           {teacher.location} - {teacher.timeWork}
@@ -81,6 +89,7 @@ export const TeacherProfileScreen = ({ route }: Props) => {
         ))}
       </View>
 
+      {/* Tab content */}
       <View style={{ flex: 1 }}>
         {activeTab === "OVERVIEW" && (
           <ScrollView style={{ paddingHorizontal: 16 }}>
@@ -91,35 +100,33 @@ export const TeacherProfileScreen = ({ route }: Props) => {
 
         {activeTab === "COURSES" && (
           <ScrollView style={{ paddingHorizontal: 16 }}>
-            <SectionBlock title="UX/UI Design">
-              {teacherCourses.length === 0 && (
-                <Text style={{ textAlign: "center", marginVertical: 20 }}>
-                  No courses found for this teacher.
-                </Text>
-              )}
-              {teacherCourses.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
-                  teachers={[teacher]}
-                />
-              ))}
-            </SectionBlock>
+            {teacherCourses.length === 0 ? (
+              <Text style={{ textAlign: "center", marginVertical: 20 }}>
+                No courses found for this teacher.
+              </Text>
+            ) : (
+              <>
+                <SectionBlock title="UI/UX Design Courses">
+                  {teacherCourses.map((course) => (
+                    <CourseCard
+                      key={course.id}
+                      course={course}
+                      teachers={[teacher]}
+                    />
+                  ))}
+                </SectionBlock>
 
-            <SectionBlock title="Grapic Design">
-              {teacherCourses.length === 0 && (
-                <Text style={{ textAlign: "center", marginVertical: 20 }}>
-                  No courses found for this teacher.
-                </Text>
-              )}
-              {teacherCourses.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
-                  teachers={[teacher]}
-                />
-              ))}
-            </SectionBlock>
+                <SectionBlock title="Graphic Design Courses">
+                  {teacherCourses.map((course) => (
+                    <CourseCard
+                      key={course.id}
+                      course={course}
+                      teachers={[teacher]}
+                    />
+                  ))}
+                </SectionBlock>
+              </>
+            )}
           </ScrollView>
         )}
 
@@ -134,6 +141,8 @@ export const TeacherProfileScreen = ({ route }: Props) => {
     </View>
   );
 };
+
+// styles giữ nguyên của bạn
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },

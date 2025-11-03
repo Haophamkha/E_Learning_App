@@ -93,16 +93,15 @@ export type RootStackParamList = {
     users?: User[];
   };
   Course_Listing: { keyword?: string; category?: string };
-  Learning: { learning: Course }; // 🔹 Xoá updatedLesson, LessonDetail không còn dùng
+  Learning: { course: Course }; 
   TeacherProfile: { teacher: Teacher; courses: Course[] };
   Cart: { courses: Course[]; user: User };
-  LoginScreen: undefined;
-  RegisterScreen: undefined;
+
 };
 
 export type RootTabParamList = {
   Home: undefined;
   MyCourse: undefined;
   Course_Searching: undefined;
-  UserProfile: { user: User; courses: Course[]; teacher: Teacher[] };
+  UserProfile: { user?: User; courses?: Course[]; teacher?: Teacher[] };
 };

@@ -1,114 +1,94 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   ScrollView,
-  ActivityIndicator,
   SafeAreaView,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native"; 
+import { useUserCourseStatus } from "../hooks/useUserCourseStatus";
+
+import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../types/type"; 
-import { getData } from "../hooks/useFetch";
+import { useDispatch, useSelector } from "react-redux";
+
+import { RootStackParamList, Course } from "../types/type";
 import { MyCourseCard } from "../components/MyCourseCard";
-import { Course, User } from "../types/type";
+import { RootState, AppDispatch } from "../auth/store";
+import { fetchAppData } from "../auth/dataSlice";
+
+type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const MyCourseScreen = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NavProp>();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const [user, setUser] = useState<User | null>(null);
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { currentUser } = useSelector((state: RootState) => state.auth);
+  const { courses, teachers, users, loading, error } = useSelector(
+    (state: RootState) => state.data
+  );
+
   const [filter, setFilter] = useState<"all" | "ongoing" | "completed">("all");
 
-  // Mặc định user = 1 do chưa có đăng nhập
-  const currentUserId = 1;
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [userData, courseData] = await Promise.all([
-          getData("/users"),
-          getData("/courses"),
-        ]);
+    dispatch(fetchAppData());
+  }, [dispatch]);
 
-        const currentUser = userData.find(
-          (u: User) => String(u.id) === String(currentUserId)
-        );
-        setUser(currentUser || null);
+const { ongoingCourses, completedCourses } = useUserCourseStatus(
+  currentUser,
+  courses
+);
 
-        let coursesList: Course[] = [];
-        if (Array.isArray(courseData)) {
-          coursesList = courseData;
-        } else if (courseData.courses && Array.isArray(courseData.courses)) {
-          coursesList = courseData.courses;
-        }
-        console.log("coursesList:", coursesList);
-
-        setCourses(coursesList);
-      } catch (err) {
-        console.error(err);
-        setError("Không thể tải dữ liệu!");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // Chuyển giờ sang phút 
-  const parseDuration = (duration: string | number): number => {
-    if (!duration) return 0;
-    if (typeof duration === "number") return duration;
-
-    const cleanDuration = duration.replace(/\s+/g, "");
-    const hourMatch = cleanDuration.match(/(\d+)h/);
-    const minuteMatch = cleanDuration.match(/(\d+)m/);
-    const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
-    const minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
-    return hours * 60 + minutes;
-  };
-
-  // Ghép course với time_watched
-  const userCourses = React.useMemo(() => {
-    console.log("🧮 Calculating userCourses...");
-    if (!user) return [];
-    const result = Object.entries(user.purchaseCourse || {})
-      .map(([courseId, progressData]) => {
-        const course = courses.find((c) => String(c.id) === String(courseId));
-        if (course) {
-          return {
-            ...course,
-            time_watched: progressData.time_watched,
-          };
-        }
-        return null;
-      })
-      .filter(Boolean) as (Course & { time_watched: number })[];
-
-    console.log("📊 userCourses:", result);
-    return result;
-  }, [user, courses]);
+const filteredCourses = useMemo(() => {
+  if (filter === "ongoing") return ongoingCourses;
+  if (filter === "completed") return completedCourses;
+  return [...ongoingCourses, ...completedCourses]; 
+}, [filter, ongoingCourses, completedCourses]);
 
 
-  // Lọc khóa học theo tab
-  const filteredCourses = React.useMemo(() => {
-    return userCourses.filter((c) => {
-      const totalMinutes = parseDuration(c.duration || "");
-      if (!totalMinutes) return false;
-      const watched = c.time_watched || 0;
-      const progress = Math.round((watched / totalMinutes) * 100);
-      if (filter === "ongoing") return progress > 0 && progress < 100;
-      if (filter === "completed") return progress >= 100;
-      return true;
-    });
-  }, [userCourses, filter]);
+  if (!currentUser || !currentUser.id) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centered}>
+          <Image
+            source={{
+              uri: "https://cdn-icons-png.flaticon.com/512/565/565547.png",
+            }}
+            style={{ width: 120, height: 120, marginBottom: 20 }}
+          />
+          <Text style={styles.loginText}>
+            Bạn cần đăng nhập để xem các khóa học của mình.
+          </Text>
+          <TouchableOpacity
+            style={styles.loginBtn}
+            onPress={() => navigation.navigate("Login" as never)}
+          >
+            <Text style={styles.loginBtnText}>Đăng nhập ngay</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#00BCD4" />
+        <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text style={{ color: "red" }}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -138,7 +118,6 @@ export const MyCourseScreen = () => {
               key={tab}
               onPress={() => setFilter(tab as any)}
               style={styles.tabItem}
-              activeOpacity={0.7}
             >
               <Text
                 style={[styles.tabText, filter === tab && styles.tabTextActive]}
@@ -150,13 +129,13 @@ export const MyCourseScreen = () => {
           ))}
         </View>
 
-        {/*DS khóa học*/}
+        {/* Courses */}
         {filteredCourses.length > 0 ? (
           filteredCourses.map((course) => (
             <MyCourseCard
               key={course.id}
               course={course}
-              onPress={() => navigation.navigate("Course_Detail", { course, users: [], courses: [] , teachers: [] })}
+              onPress={() => navigation.navigate("Learning", { course })}
             />
           ))
         ) : (
@@ -165,12 +144,33 @@ export const MyCourseScreen = () => {
       </ScrollView>
     </SafeAreaView>
   );
+
 };
+
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#fff" },
   container: { padding: 16, paddingBottom: 40 },
-  centered: { flex: 1, justifyContent: "center", alignItems: "center" },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingHorizontal: 20,
+  },
+  loginText: {
+    fontSize: 16,
+    color: "#333",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  loginBtn: {
+    backgroundColor: "#00BCD4",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  loginBtnText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 16 },
   tabs: {
     flexDirection: "row",
@@ -181,11 +181,11 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   tabItem: { alignItems: "center", paddingBottom: 4 },
-  tabText: { fontSize: 20, color: "#777", fontWeight: "600" },
+  tabText: { fontSize: 18, color: "#777", fontWeight: "600" },
   tabTextActive: { color: "#00BCD4" },
   tabUnderline: {
     marginTop: 6,
-    width: 100,
+    width: 80,
     height: 3,
     backgroundColor: "#00BCD4",
     borderRadius: 2,
@@ -199,16 +199,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignItems: "center",
   },
-  bannerText: {
-    flex: 3,
-    marginRight: 8,
-  },
+  bannerText: { flex: 3, marginRight: 8 },
   bannerTitle: {
     color: "#fff",
-    fontSize: 25,
+    fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 4,
-    paddingBottom: 20,
+    marginBottom: 8,
   },
   joinBtn: {
     backgroundColor: "#fff",
@@ -217,13 +213,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignSelf: "flex-start",
   },
-  joinText: { color: "#00BCD4", fontWeight: "bold", fontSize: 20 },
+  joinText: { color: "#00BCD4", fontWeight: "bold", fontSize: 16 },
   bannerImg: {
     flex: 1,
-    maxWidth: 150,
-    height: 130,
+    maxWidth: 130,
+    height: 120,
     borderRadius: 12,
     resizeMode: "cover",
-    marginRight: 20,
+    marginLeft: 10,
   },
 });
+
+export default MyCourseScreen;

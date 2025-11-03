@@ -1,111 +1,204 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  TouchableOpacity,
   ScrollView,
+  TextInput,
+  TouchableOpacity,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../auth/store";
 import {
-  CompositeNavigationProp,
-  RouteProp,
-  useNavigation,
-} from "@react-navigation/native";
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import {
-  RootStackParamList,
-  RootTabParamList,
-  User,
-  Course,
-} from "../types/type";
-import { getData } from "../hooks/useFetch";
-import { InspiresCourse } from "../components/InspiresCourse";
+  loginStart,
+  loginSuccess,
+  loginFailure,
+  logout,
+} from "../auth/authSlice";
 
-// ✅ Navigation Type cho Tab + Stack
-type UserProfileNavProp = CompositeNavigationProp<
-  BottomTabNavigationProp<RootTabParamList, "UserProfile">,
-  NativeStackNavigationProp<RootStackParamList>
->;
+import { useUserCourseStatus } from "../hooks/useUserCourseStatus";
+import { User } from "../types/type";
+import axios from "axios";
+import { InspiresCourse } from "../components/InspiresCourse";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParamList, Course } from "../types/type";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const UserProfileScreen = () => {
-  const navigation = useNavigation<UserProfileNavProp>();
+  const dispatch = useDispatch();
+  const navigation = useNavigation<NavProp>();
+  const { currentUser, loading, error } = useSelector(
+    (state: RootState) => state.auth
+  );
+  const { courses, teachers } = useSelector((state: RootState) => state.data);
 
-  const [user, setUser] = useState<User | null>(null);
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [teachers, setTeachers] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<
-    "SAVE" | "ONGOING" | "COMPLETED"
-  >("SAVE");
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const currentUserId = 1;
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [userData, courseData, teacherData] = await Promise.all([
-          getData("/users"),
-          getData("/courses"),
-          getData("/teachers"),
-        ]);
-
-        const currentUser = userData.find(
-          (u: User) => String(u.id) === String(currentUserId)
-        );
-
-        setUser(currentUser || null);
-        setCourses(courseData);
-        setTeachers(teacherData);
-      } catch (err) {
-        console.error(err);
-        setError("Không thể tải dữ liệu!");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading)
-    return (
-      <View style={styles.center}>
-        <Text>Loading...</Text>
-      </View>
-    );
-
-  if (error || !user)
-    return (
-      <View style={styles.center}>
-        <Text>{error ?? "User không tồn tại"}</Text>
-      </View>
-    );
-
-  // ✅ Lọc danh sách theo tiến độ
-  // Lấy danh sách khóa học đã lưu
-  const savedCourses = courses.filter((course) =>
-    user.savedCourseList.includes(Number(course.id))
+  const [isRegister, setIsRegister] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [job, setJob] = useState("");
+  const [hidePw, setHidePw] = useState(true);
+  const { ongoingCourses, completedCourses } = useUserCourseStatus(
+    currentUser,
+    courses
   );
 
-  // Lấy danh sách khóa học đang học
-  const ongoingCourses = Object.keys(user.purchaseCourse || {})
-    .map((id) => Number(id))
-    .map((courseId) => courses.find((c) => c.id === courseId))
-    .filter((c): c is Course => c !== undefined);
+  // 🧠 Login
+  const handleLogin = async () => {
+    if (!userName || !password) {
+      dispatch(loginFailure("Vui lòng nhập đầy đủ thông tin"));
+      return;
+    }
 
-  const tabLabels = {
-    SAVE: "Save",
-    ONGOING: "On Going",
-    COMPLETED: "Completed",
+    dispatch(loginStart());
+    try {
+      const res = await axios.get("http://localhost:3000/users");
+      const user = res.data.find(
+        (u: User) => u.userName === userName && u.password === password
+      );
+
+      if (user) {
+        dispatch(loginSuccess(user));
+      } else {
+        dispatch(loginFailure("Sai tài khoản hoặc mật khẩu"));
+      }
+    } catch {
+      dispatch(loginFailure("Lỗi kết nối server"));
+    }
   };
+
+  // 🧠 Register
+  const handleRegister = async () => {
+    if (!userName || !password || !name) {
+      dispatch(loginFailure("Vui lòng nhập đầy đủ thông tin"));
+      return;
+    }
+
+    try {
+      const newUser: User = {
+        id: Date.now(),
+        name,
+        job,
+        image: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+        userName,
+        password,
+        savedCourseList: [],
+        cart: [],
+        purchaseCourse: {},
+      };
+
+      const res = await axios.post("http://localhost:3000/users", newUser);
+      dispatch(loginSuccess(res.data));
+      setIsRegister(false);
+    } catch {
+      dispatch(loginFailure("Đăng ký thất bại"));
+    }
+  };
+
+  // 🧠 Logout
+  const handleLogout = () => dispatch(logout());
+
+  // 🧩 Nếu chưa đăng nhập: render login/register UI
+  if (!currentUser) {
+    return (
+      <View style={styles.authContainer}>
+        <View style={styles.authBox}>
+          <Text style={styles.title}>
+            {isRegister ? "Tạo tài khoản mới" : "Chào mừng trở lại!"}
+          </Text>
+          <Text style={styles.subText}>
+            {isRegister
+              ? "Đăng ký để bắt đầu học ngay"
+              : "Đăng nhập để tiếp tục học"}
+          </Text>
+
+          {isRegister && (
+            <>
+              <TextInput
+                style={styles.input}
+                placeholder="Họ và tên"
+                placeholderTextColor="#aaa"
+                value={name}
+                onChangeText={setName}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Công việc (VD: Sinh viên, Designer...)"
+                placeholderTextColor="#aaa"
+                value={job}
+                onChangeText={setJob}
+              />
+            </>
+          )}
+
+          <TextInput
+            style={styles.input}
+            placeholder="Tên đăng nhập"
+            placeholderTextColor="#aaa"
+            value={userName}
+            onChangeText={setUserName}
+          />
+
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.inputPassword}
+              placeholder="Mật khẩu"
+              secureTextEntry={hidePw}
+              placeholderTextColor="#aaa"
+              value={password}
+              onChangeText={setPassword}
+            />
+            <TouchableOpacity
+              onPress={() => setHidePw(!hidePw)}
+              style={styles.eyeIcon}
+            >
+              <Ionicons
+                name={hidePw ? "eye-off-outline" : "eye-outline"}
+                size={22}
+                color="#555"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={isRegister ? handleRegister : handleLogin}
+          >
+            <Text style={styles.btnText}>
+              {loading ? "Đang xử lý..." : isRegister ? "Đăng ký" : "Đăng nhập"}
+            </Text>
+          </TouchableOpacity>
+
+          {error && <Text style={styles.error}>{error}</Text>}
+
+          <View style={styles.switchRow}>
+            <Text style={styles.normalText}>
+              {isRegister ? "Đã có tài khoản? " : "Chưa có tài khoản? "}
+            </Text>
+            <TouchableOpacity onPress={() => setIsRegister(!isRegister)}>
+              <Text style={styles.linkText}>
+                {isRegister ? "Đăng nhập" : "Đăng ký ngay"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  // 🧩 Nếu đã đăng nhập: render thông tin người dùng
+  const user = currentUser as User;
+  const savedCourses = courses.filter((c) =>
+    user.savedCourseList?.includes(Number(c.id))
+  );
+
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header */}
       <View style={styles.headerBackground}>
         <Image
           source={{
@@ -116,36 +209,42 @@ export const UserProfileScreen = () => {
         />
       </View>
 
-      {/* Avatar */}
       <View style={styles.avatarWrapper}>
-        <Image source={{ uri: user.image }} style={styles.avatar} />
+        <Image
+          source={{
+            uri:
+              user.image ||
+              "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+          }}
+          style={styles.avatar}
+        />
       </View>
 
-      {/* User Info */}
       <View style={styles.infoContainer}>
         <Text style={styles.userName}>{user.name}</Text>
-        <Text style={styles.jobText}>{user.job}</Text>
+        <Text style={styles.jobText}>{user.job || "Học viên"}</Text>
       </View>
 
-      {/* Stats Row */}
+      <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+        <Text style={styles.logoutText}>Đăng xuất</Text>
+      </TouchableOpacity>
+
       <View style={styles.statsRow}>
-        {(["SAVE", "ONGOING", "COMPLETED"] as const).map((tab) => (
-          <View key={tab} style={styles.statItem}>
-            <Text style={styles.statNumber}>
-              {tab === "SAVE"
-                ? savedCourses.length
-                : tab === "ONGOING"
-                ? ongoingCourses.length
-                : 0}
-            </Text>
-            <Text style={styles.statLabel}>{tabLabels[tab]}</Text>
-          </View>
-        ))}
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>{savedCourses.length}</Text>
+          <Text style={styles.statLabel}>Saved</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>{ongoingCourses.length}</Text>
+          <Text style={styles.statLabel}>On Going</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>{completedCourses.length}</Text>
+          <Text style={styles.statLabel}>Completed</Text>
+        </View>
       </View>
 
-      {/* Courses Section */}
       <Text style={styles.sectionTitle}>Saved Courses</Text>
-
       <View style={{ paddingHorizontal: 16 }}>
         {savedCourses.length > 0 ? (
           savedCourses.map((course) => (
@@ -153,6 +252,7 @@ export const UserProfileScreen = () => {
               key={course.id}
               course={course}
               teachers={teachers}
+              saved={user.savedCourseList.includes(Number(course.id))} // 🔹 đánh dấu đã save
               onPress={() => navigation.navigate("Course_Detail", { course })}
             />
           ))
@@ -166,14 +266,44 @@ export const UserProfileScreen = () => {
   );
 };
 
-// ✅ Styles
+// 🎨 Style
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  center: { flex: 1, justifyContent: "center", alignItems: "center" },
-
+  container: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16 },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    marginBottom: 6,
+    textAlign: "center",
+  },
+  subText: { color: "#555", textAlign: "center", marginBottom: 20 },
+  input: {
+    width: "100%",
+    height: 50,
+    backgroundColor: "#F2F2F2",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginBottom: 14,
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F2F2F2",
+    borderRadius: 8,
+    marginBottom: 14,
+  },
+  inputPassword: { flex: 1, height: 50, paddingHorizontal: 12 },
+  eyeIcon: { paddingHorizontal: 12 },
+  btn: {
+    backgroundColor: "#00BCD4",
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  btnText: { color: "#fff", fontWeight: "bold", textAlign: "center" },
+  error: { color: "red", textAlign: "center", marginTop: 8 },
+  // Profile
   headerBackground: { height: 180 },
   headerImage: { width: "100%", height: "100%" },
-
   avatarWrapper: {
     position: "absolute",
     top: 120,
@@ -184,11 +314,18 @@ const styles = StyleSheet.create({
     borderColor: "#fff",
   },
   avatar: { width: 120, height: 120, borderRadius: 60 },
-
   infoContainer: { marginTop: 70, alignItems: "center" },
   userName: { fontSize: 26, fontWeight: "bold" },
   jobText: { fontSize: 16, color: "#777", marginTop: 4 },
-
+  logoutBtn: {
+    alignSelf: "center",
+    backgroundColor: "#eee",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  logoutText: { color: "red", fontWeight: "600" },
   statsRow: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -196,21 +333,44 @@ const styles = StyleSheet.create({
   },
   statItem: { alignItems: "center" },
   statNumber: { fontSize: 22, fontWeight: "700" },
-  activeStat: { color: "#00BCD4" },
   statLabel: { fontSize: 14, color: "#777" },
-
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
     marginTop: 10,
     marginBottom: 10,
-    paddingHorizontal: 16,
   },
-  emptyText: {
-    marginTop: 10,
-    textAlign: "center",
-    fontSize: 15,
-    color: "#777",
+  emptyText: { textAlign: "center", color: "#777" },
+  authContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f9f9f9",
+  },
+  authBox: {
+    width: "90%",
+    backgroundColor: "#fff",
+    padding: 25,
+    borderRadius: 14,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  switchRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 16,
+  },
+  normalText: {
+    color: "#000",
+    fontSize: 14,
+  },
+  linkText: {
+    color: "#007BFF",
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });
 

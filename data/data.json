@@ -1,7 +1,7 @@
 {
   "teachers": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Trần Thị B",
       "Job": "Giảng viên React Native",
       "location": "TP. Hồ Chí Minh",
@@ -14,7 +14,7 @@
       "voteCount": 123
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Phạm Anh Dũng",
       "Job": "Giảng viên Java",
       "location": "TP. Hồ Chí Minh",
@@ -27,7 +27,7 @@
       "voteCount": 98
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "Nguyễn Hồng Mai",
       "Job": "Giảng viên ReactJS",
       "location": "TP. Hồ Chí Minh",
@@ -40,7 +40,7 @@
       "voteCount": 76
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "Lê Quốc Huy",
       "Job": "Giảng viên Khoa học máy tính",
       "location": "TP. Hồ Chí Minh",
@@ -48,12 +48,12 @@
       "image": "https://randomuser.me/api/portraits/men/6.jpg",
       "school": "Đại học Bách khoa TP.HCM",
       "userName": "huyquoc",
-      "password": "datastruct321",  
+      "password": "datastruct321",
       "vote": 4.2,
       "voteCount": 142
     },
     {
-      "id": 5,
+      "id": "5",
       "name": "Đỗ Thị Lan",
       "Job": "Giảng viên Tiếng Anh",
       "location": "TP. Hà Nội",
@@ -62,11 +62,11 @@
       "school": "Đại học Ngoại ngữ Hà Nội",
       "userName": "lananh",
       "password": "englishabc",
-      "vote": 4.0,
+      "vote": 4,
       "voteCount": 89
     },
     {
-      "id": 6,
+      "id": "6",
       "name": "Trần Văn Khoa",
       "Job": "Giảng viên Python",
       "location": "TP. Đà Nẵng",
@@ -79,7 +79,7 @@
       "voteCount": 134
     },
     {
-      "id": 7,
+      "id": "7",
       "name": "Nguyễn Đức Minh",
       "Job": "Giảng viên C++",
       "location": "TP. Hà Nội",
@@ -92,7 +92,7 @@
       "voteCount": 104
     },
     {
-      "id": 8,
+      "id": "8",
       "name": "Lê Thảo Vy",
       "Job": "Giảng viên Thiết kế UI/UX",
       "location": "TP. Hồ Chí Minh",
@@ -105,7 +105,7 @@
       "voteCount": 75
     },
     {
-      "id": 9,
+      "id": "9",
       "name": "Đặng Minh Tâm",
       "Job": "Giảng viên Kỹ năng mềm",
       "location": "TP. Hồ Chí Minh",
@@ -118,7 +118,7 @@
       "voteCount": 118
     },
     {
-      "id": 10,
+      "id": "10",
       "name": "Bùi Thu Hằng",
       "Job": "Giảng viên Marketing",
       "location": "TP. Hà Nội",
@@ -131,7 +131,7 @@
       "voteCount": 90
     },
     {
-      "id": 11,
+      "id": "11",
       "name": "Phan Văn Khánh",
       "Job": "Giảng viên Lập trình Web",
       "location": "TP. Cần Thơ",
@@ -144,7 +144,7 @@
       "voteCount": 111
     },
     {
-      "id": 12,
+      "id": "12",
       "name": "Ngô Thị Kim Chi",
       "Job": "Giảng viên Photoshop",
       "location": "TP. Hồ Chí Minh",
@@ -157,7 +157,7 @@
       "voteCount": 102
     },
     {
-      "id": 13,
+      "id": "13",
       "name": "Võ Thanh Tùng",
       "Job": "Giảng viên Node.js",
       "location": "TP. Hồ Chí Minh",
@@ -170,7 +170,7 @@
       "voteCount": 158
     },
     {
-      "id": 14,
+      "id": "14",
       "name": "Trịnh Thị Hòa",
       "Job": "Giảng viên SQL & Database",
       "location": "TP. Hà Nội",
@@ -183,7 +183,7 @@
       "voteCount": 95
     },
     {
-      "id": 15,
+      "id": "15",
       "name": "Nguyễn Minh Trí",
       "Job": "Giảng viên Flutter",
       "location": "TP. Hồ Chí Minh",
@@ -196,7 +196,7 @@
       "voteCount": 107
     },
     {
-      "id": 16,
+      "id": "16",
       "name": "Đỗ Bảo Anh",
       "Job": "Giảng viên Kinh doanh quốc tế",
       "location": "TP. Hà Nội",
@@ -209,7 +209,7 @@
       "voteCount": 81
     },
     {
-      "id": 17,
+      "id": "17",
       "name": "Nguyễn Văn Phước",
       "Job": "Giảng viên Machine Learning",
       "location": "TP. Đà Nẵng",
@@ -222,7 +222,7 @@
       "voteCount": 144
     },
     {
-      "id": 18,
+      "id": "18",
       "name": "Trần Thanh Ngọc",
       "Job": "Giảng viên Thiết kế 3D",
       "location": "TP. Hồ Chí Minh",
@@ -235,7 +235,7 @@
       "voteCount": 120
     },
     {
-      "id": 19,
+      "id": "19",
       "name": "Phạm Quang Huy",
       "Job": "Giảng viên Phân tích dữ liệu",
       "location": "TP. Hà Nội",
@@ -248,7 +248,7 @@
       "voteCount": 133
     },
     {
-      "id": 20,
+      "id": "20",
       "name": "Vũ Thị Yến",
       "Job": "Giảng viên Trí tuệ nhân tạo",
       "location": "TP. Hồ Chí Minh",
@@ -261,17 +261,16 @@
       "voteCount": 159
     }
   ],
-
   "courses": [
     {
-      "id": 101,
+      "id": "101",
       "name": "React Native Cơ Bản",
       "teacherId": 1,
       "price": 499000,
       "discount": 10,
       "vote": 4.8,
       "voteCount": 152,
-      "like" : 230,
+      "like": 230,
       "share": 45,
       "category": "Code",
       "duration": "3h 25m",
@@ -363,17 +362,17 @@
       ]
     },
     {
-      "id": 102,
+      "id": "102",
       "name": "Java Từ Cơ Bản đến Nâng Cao",
       "teacherId": 1,
       "price": 599000,
       "discount": 15,
       "vote": 4.7,
       "voteCount": 210,
-      "like" : 310,
+      "like": 310,
       "share": 60,
       "category": "Code",
-      "duration": "10h 30m",
+      "duration": "1h",
       "description": "Khóa Java từ cú pháp cơ bản, OOP đến các chủ đề nâng cao như multithreading và JDBC.",
       "lessonCount": 6,
       "image": "https://picsum.photos/seed/course102/600/400",
@@ -462,14 +461,14 @@
       ]
     },
     {
-      "id": 103,
+      "id": "103",
       "name": "ReactJS cho Web",
       "teacherId": 3,
       "price": 549000,
       "discount": 10,
       "vote": 4.9,
       "voteCount": 275,
-      "like" : 290,
+      "like": 290,
       "share": 50,
       "category": "Code",
       "duration": "8h 0m",
@@ -561,14 +560,14 @@
       ]
     },
     {
-      "id": 104,
+      "id": "104",
       "name": "Cấu trúc Dữ liệu & Giải thuật",
       "teacherId": 4,
       "price": 399000,
       "discount": 5,
       "vote": 4.6,
       "voteCount": 180,
-      "like" : 210,
+      "like": 210,
       "share": 35,
       "category": "Code",
       "duration": "6h 10m",
@@ -660,14 +659,14 @@
       ]
     },
     {
-      "id": 105,
+      "id": "105",
       "name": "Fullstack Node.js & Express",
       "teacherId": 3,
       "price": 649000,
       "discount": 20,
       "vote": 4.9,
       "voteCount": 310,
-      "like" : 350,
+      "like": 350,
       "share": 70,
       "category": "Code",
       "duration": "12h 0m",
@@ -759,14 +758,14 @@
       ]
     },
     {
-      "id": 106,
+      "id": "106",
       "name": "Tiếng Anh Giao Tiếp Cơ Bản",
       "teacherId": 1,
       "price": 299000,
       "discount": 0,
       "vote": 4.5,
       "voteCount": 120,
-      "like" : 150,
+      "like": 150,
       "share": 25,
       "category": "Language",
       "duration": "4h 0m",
@@ -858,14 +857,14 @@
       ]
     },
     {
-      "id": 107,
+      "id": "107",
       "name": "Python Cơ Bản Cho Người Mới",
       "teacherId": 6,
       "price": 459000,
       "discount": 5,
       "vote": 4.7,
       "voteCount": 260,
-      "like" : 280,
+      "like": 280,
       "share": 55,
       "category": "Code",
       "duration": "7h 30m",
@@ -957,14 +956,14 @@
       ]
     },
     {
-      "id": 108,
+      "id": "108",
       "name": "C++ Nâng Cao",
       "teacherId": 7,
       "price": 499000,
       "discount": 10,
       "vote": 4.8,
       "voteCount": 190,
-      "like" : 220,
+      "like": 220,
       "share": 40,
       "category": "Code",
       "duration": "9h 0m",
@@ -1056,14 +1055,14 @@
       ]
     },
     {
-      "id": 109,
+      "id": "109",
       "name": "Thiết Kế UI/UX với Figma",
       "teacherId": 1,
       "price": 399000,
       "discount": 0,
       "vote": 4.6,
       "voteCount": 145,
-      "like" : 175,
+      "like": 175,
       "share": 30,
       "category": "Design",
       "duration": "5h 0m",
@@ -1155,14 +1154,14 @@
       ]
     },
     {
-      "id": 110,
+      "id": "110",
       "name": "Kỹ năng Giao tiếp trong Doanh nghiệp",
       "teacherId": 9,
       "price": 359000,
       "discount": 5,
       "vote": 4.4,
       "voteCount": 130,
-      "like" : 160,
+      "like": 160,
       "share": 20,
       "category": "Language",
       "duration": "3h 20m",
@@ -1254,14 +1253,14 @@
       ]
     },
     {
-      "id": 111,
+      "id": "111",
       "name": "Lập trình Web Frontend với Vue.js",
       "teacherId": 11,
       "price": 459000,
       "discount": 10,
       "vote": 4.6,
       "voteCount": 160,
-      "like" : 200,
+      "like": 200,
       "share": 45,
       "category": "Language",
       "duration": "7h 10m",
@@ -1353,14 +1352,14 @@
       ]
     },
     {
-      "id": 112,
+      "id": "112",
       "name": "Photoshop Cơ Bản đến Nâng Cao",
       "teacherId": 1,
       "price": 399000,
       "discount": 0,
       "vote": 4.5,
       "voteCount": 140,
-      "like" : 180,
+      "like": 180,
       "share": 30,
       "category": "Design",
       "duration": "6h 40m",
@@ -1452,14 +1451,14 @@
       ]
     },
     {
-      "id": 113,
+      "id": "113",
       "name": "Node.js & Express nâng cao",
       "teacherId": 13,
       "price": 549000,
       "discount": 10,
       "vote": 4.7,
       "voteCount": 200,
-      "like" : 230,
+      "like": 230,
       "share": 50,
       "category": "Language",
       "duration": "9h 15m",
@@ -1551,14 +1550,14 @@
       ]
     },
     {
-      "id": 114,
+      "id": "114",
       "name": "SQL & Database Design",
       "teacherId": 14,
       "price": 429000,
       "discount": 5,
       "vote": 4.6,
       "voteCount": 170,
-      "like" : 190,
+      "like": 190,
       "share": 35,
       "category": "Language",
       "duration": "6h 30m",
@@ -1650,14 +1649,14 @@
       ]
     },
     {
-      "id": 115,
+      "id": "115",
       "name": "Flutter & Dart: Xây dựng App",
       "teacherId": 15,
       "price": 499000,
       "discount": 15,
       "vote": 4.7,
       "voteCount": 220,
-      "like" : 250,
+      "like": 250,
       "share": 60,
       "category": "Language",
       "duration": "8h 45m",
@@ -1749,14 +1748,14 @@
       ]
     },
     {
-      "id": 116,
+      "id": "116",
       "name": "Machine Learning cơ bản",
       "teacherId": 1,
       "price": 699000,
       "discount": 20,
       "vote": 4.8,
       "voteCount": 340,
-      "like" : 400,
+      "like": 400,
       "share": 80,
       "category": "Language",
       "duration": "14h 0m",
@@ -1848,14 +1847,14 @@
       ]
     },
     {
-      "id": 117,
+      "id": "117",
       "name": "Phân tích Dữ liệu với Python",
       "teacherId": 19,
       "price": 459000,
       "discount": 10,
       "vote": 4.6,
       "voteCount": 150,
-      "like" : 180,
+      "like": 180,
       "share": 25,
       "category": "Movie",
       "duration": "8h 20m",
@@ -1947,14 +1946,14 @@
       ]
     },
     {
-      "id": 118,
+      "id": "118",
       "name": "Kinh doanh Quốc tế cơ bản",
       "teacherId": 16,
       "price": 399000,
       "discount": 5,
       "vote": 4.5,
       "voteCount": 110,
-      "like" : 130,
+      "like": 130,
       "share": 15,
       "category": "Business",
       "duration": "5h 0m",
@@ -2046,14 +2045,14 @@
       ]
     },
     {
-      "id": 119,
+      "id": "119",
       "name": "Thiết kế 3D cơ bản",
       "teacherId": 18,
       "price": 449000,
       "discount": 10,
       "vote": 4.6,
       "voteCount": 155,
-      "like" : 175,
+      "like": 175,
       "share": 22,
       "category": "Movie",
       "duration": "7h 0m",
@@ -2145,14 +2144,14 @@
       ]
     },
     {
-      "id": 120,
+      "id": "120",
       "name": "Kỹ năng Marketing cơ bản",
       "teacherId": 1,
       "price": 379000,
       "discount": 0,
       "vote": 4.4,
       "voteCount": 130,
-      "like" : 150,
+      "like": 150,
       "share": 20,
       "category": "Business",
       "duration": "4h 30m",
@@ -2244,14 +2243,14 @@
       ]
     },
     {
-      "id": 121,
+      "id": "121",
       "name": "RESTful API design",
       "teacherId": 13,
       "price": 449000,
       "discount": 10,
       "vote": 4.7,
       "voteCount": 175,
-      "like" : 200,
+      "like": 200,
       "share": 28,
       "category": "Movie",
       "duration": "7h 0m",
@@ -2343,14 +2342,14 @@
       ]
     },
     {
-      "id": 122,
+      "id": "122",
       "name": "Unit Testing & TDD",
       "teacherId": 13,
       "price": 399000,
       "discount": 5,
       "vote": 4.6,
       "voteCount": 140,
-      "like" : 160,
+      "like": 160,
       "share": 18,
       "category": "Writing",
       "duration": "5h 30m",
@@ -2442,14 +2441,14 @@
       ]
     },
     {
-      "id": 123,
+      "id": "123",
       "name": "SEO cơ bản cho người làm nội dung",
       "teacherId": 10,
       "price": 299000,
       "discount": 0,
       "vote": 4.3,
       "voteCount": 90,
-      "like" : 110,
+      "like": 110,
       "share": 12,
       "category": "Writing",
       "duration": "3h 0m",
@@ -2541,14 +2540,14 @@
       ]
     },
     {
-      "id": 124,
+      "id": "124",
       "name": "Kubernetes cơ bản",
       "teacherId": 13,
       "price": 749000,
       "discount": 20,
       "vote": 4.7,
       "voteCount": 210,
-      "like" : 230,
+      "like": 230,
       "share": 35,
       "category": "Writing",
       "duration": "10h 0m",
@@ -2640,14 +2639,14 @@
       ]
     },
     {
-      "id": 125,
+      "id": "125",
       "name": "GraphQL từ A đến Z",
       "teacherId": 13,
       "price": 499000,
       "discount": 10,
       "vote": 4.6,
       "voteCount": 160,
-      "like" : 180,
+      "like": 180,
       "share": 20,
       "category": "Design",
       "duration": "6h 0m",
@@ -2739,14 +2738,14 @@
       ]
     },
     {
-      "id": 126,
+      "id": "126",
       "name": "Docker căn bản",
       "teacherId": 13,
       "price": 349000,
       "discount": 0,
       "vote": 4.5,
       "voteCount": 140,
-      "like" : 160,
+      "like": 160,
       "share": 18,
       "category": "Design",
       "duration": "4h 30m",
@@ -2838,14 +2837,14 @@
       ]
     },
     {
-      "id": 127,
+      "id": "127",
       "name": "Data Structures in Python",
       "teacherId": 4,
       "price": 429000,
       "discount": 5,
       "vote": 4.6,
       "voteCount": 145,
-      "like" : 165,
+      "like": 165,
       "share": 19,
       "category": "Business",
       "duration": "6h 20m",
@@ -2937,14 +2936,14 @@
       ]
     },
     {
-      "id": 128,
+      "id": "128",
       "name": "Adobe Illustrator từ cơ bản",
       "teacherId": 8,
       "price": 379000,
       "discount": 0,
       "vote": 4.5,
       "voteCount": 125,
-      "like" : 145,
+      "like": 145,
       "share": 15,
       "category": "Business",
       "duration": "5h 10m",
@@ -3036,10 +3035,9 @@
       ]
     }
   ],
-
   "users": [
     {
-      "id": 0,
+      "id": "0",
       "name": "Admin",
       "job": "Quản lý",
       "image": "https://randomuser.me/api/portraits/men/0.jpg",
@@ -3050,154 +3048,320 @@
       "purchaseCourse": {}
     },
     {
-      "id": 1,
+      "id": "1",
       "name": "Nguyễn Văn A",
       "job": "Sinh viên CNTT",
       "image": "https://randomuser.me/api/portraits/men/1.jpg",
-      "savedCourseList": [101, 103, 105, 107, 109],
-      "cart": [101, 104, 108],
+      "savedCourseList": [
+        101,
+        103,
+        105,
+        107,
+        109
+      ],
+      "cart": [
+        101,
+        104,
+        108
+      ],
       "userName": "nguyenvana",
       "password": "123456",
       "purchaseCourse": {
-        "101": { "time_watched": 120 },
-        "103": { "time_watched": 90 },
-        "105": { "time_watched": 45 },
-        "107": { "time_watched": 15 }
+        "101": {
+          "time_watched": 120
+        },
+        "103": {
+          "time_watched": 90
+        },
+        "105": {
+          "time_watched": 45
+        },
+        "107": {
+          "time_watched": 15
+        }
       }
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Trần Thị B",
       "job": "Nhân viên kế toán",
       "image": "https://randomuser.me/api/portraits/women/2.jpg",
-      "savedCourseList": [102, 104, 106, 108, 110],
-      "cart": [103, 107, 109],
+      "savedCourseList": [
+        102,
+        104,
+        106,
+        108,
+        110
+      ],
+      "cart": [
+        103,
+        107,
+        109
+      ],
       "userName": "tranthib",
       "password": "abcdef",
       "purchaseCourse": {
-        "102": { "time_watched": 75 },
-        "104": { "time_watched": 60 },
-        "106": { "time_watched": 30 },
-        "108": { "time_watched": 10 }
+        "102": {
+          "time_watched": 60
+        },
+        "104": {
+          "time_watched": 60
+        },
+        "106": {
+          "time_watched": 30
+        },
+        "108": {
+          "time_watched": 10
+        }
       }
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "Lê Minh C",
       "job": "Freelancer thiết kế",
       "image": "https://randomuser.me/api/portraits/men/3.jpg",
-      "savedCourseList": [111, 112, 113, 114, 115],
-      "cart": [111, 116, 118],
+      "savedCourseList": [
+        111,
+        112,
+        113,
+        114,
+        115
+      ],
+      "cart": [
+        111,
+        116,
+        118
+      ],
       "userName": "leminhc",
       "password": "pass123",
       "purchaseCourse": {
-        "111": { "time_watched": 200 },
-        "112": { "time_watched": 90 },
-        "113": { "time_watched": 15 }
+        "111": {
+          "time_watched": 200
+        },
+        "112": {
+          "time_watched": 90
+        },
+        "113": {
+          "time_watched": 15
+        }
       }
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "Phạm Thị D",
       "job": "Giáo viên tiếng Anh",
       "image": "https://randomuser.me/api/portraits/women/4.jpg",
-      "savedCourseList": [116, 117, 118, 119, 120],
-      "cart": [117, 119, 120],
+      "savedCourseList": [
+        116,
+        117,
+        118,
+        119,
+        120
+      ],
+      "cart": [
+        117,
+        119,
+        120
+      ],
       "userName": "phamthid",
       "password": "qwerty",
       "purchaseCourse": {
-        "116": { "time_watched": 180 },
-        "117": { "time_watched": 100 },
-        "118": { "time_watched": 55 }
+        "116": {
+          "time_watched": 180
+        },
+        "117": {
+          "time_watched": 100
+        },
+        "118": {
+          "time_watched": 55
+        }
       }
     },
     {
-      "id": 5,
+      "id": "5",
       "name": "Đỗ Văn E",
       "job": "Lập trình viên backend",
       "image": "https://randomuser.me/api/portraits/men/5.jpg",
-      "savedCourseList": [121, 122, 123, 124, 125],
-      "cart": [121, 126, 127],
+      "savedCourseList": [
+        121,
+        122,
+        123,
+        124,
+        125
+      ],
+      "cart": [
+        121,
+        126,
+        127
+      ],
       "userName": "dovane",
       "password": "654321",
       "purchaseCourse": {
-        "121": { "time_watched": 250 },
-        "122": { "time_watched": 120 },
-        "123": { "time_watched": 90 }
+        "121": {
+          "time_watched": 250
+        },
+        "122": {
+          "time_watched": 120
+        },
+        "123": {
+          "time_watched": 90
+        }
       }
     },
     {
-      "id": 6,
+      "id": "6",
       "name": "Ngô Thị F",
       "job": "Tester phần mềm",
       "image": "https://randomuser.me/api/portraits/women/6.jpg",
-      "savedCourseList": [126, 127, 128, 129, 130],
-      "cart": [126, 127, 128],
+      "savedCourseList": [
+        126,
+        127,
+        128,
+        129,
+        130
+      ],
+      "cart": [
+        126,
+        127,
+        128
+      ],
       "userName": "ngothif",
       "password": "987654",
       "purchaseCourse": {
-        "126": { "time_watched": 130 },
-        "127": { "time_watched": 180 },
-        "128": { "time_watched": 70 }
+        "126": {
+          "time_watched": 130
+        },
+        "127": {
+          "time_watched": 180
+        },
+        "128": {
+          "time_watched": 70
+        }
       }
     },
     {
-      "id": 7,
+      "id": "7",
       "name": "Phan Văn G",
       "job": "Kỹ sư phần mềm",
       "image": "https://randomuser.me/api/portraits/men/7.jpg",
-      "savedCourseList": [101, 102, 103, 104],
-      "cart": [101, 103, 105],
+      "savedCourseList": [
+        101,
+        102,
+        103,
+        104
+      ],
+      "cart": [
+        101,
+        103,
+        105
+      ],
       "userName": "phanvang",
       "password": "123abc",
       "purchaseCourse": {
-        "101": { "time_watched": 200 },
-        "102": { "time_watched": 160 },
-        "103": { "time_watched": 45 }
+        "101": {
+          "time_watched": 200
+        },
+        "102": {
+          "time_watched": 160
+        },
+        "103": {
+          "time_watched": 45
+        }
       }
     },
     {
-      "id": 8,
+      "id": "8",
       "name": "Vũ Thị H",
       "job": "Sinh viên Kinh tế",
       "image": "https://randomuser.me/api/portraits/women/8.jpg",
-      "savedCourseList": [105, 106, 107],
-      "cart": [106, 107, 108],
+      "savedCourseList": [
+        105,
+        106,
+        107
+      ],
+      "cart": [
+        106,
+        107,
+        108
+      ],
       "userName": "vuthih",
       "password": "pass789",
       "purchaseCourse": {
-        "105": { "time_watched": 80 },
-        "106": { "time_watched": 50 }
+        "105": {
+          "time_watched": 80
+        },
+        "106": {
+          "time_watched": 50
+        }
       }
     },
     {
-      "id": 9,
+      "id": "9",
       "name": "Nguyễn Văn I",
       "job": "QA Engineer",
       "image": "https://randomuser.me/api/portraits/men/9.jpg",
-      "savedCourseList": [108, 109, 110, 111],
-      "cart": [108, 110, 111],
+      "savedCourseList": [
+        108,
+        109,
+        110,
+        111
+      ],
+      "cart": [
+        108,
+        110,
+        111
+      ],
       "userName": "nguyenvani",
       "password": "i321654",
       "purchaseCourse": {
-        "108": { "time_watched": 200 },
-        "110": { "time_watched": 140 }
+        "108": {
+          "time_watched": 200
+        },
+        "110": {
+          "time_watched": 140
+        }
       }
     },
     {
-      "id": 10,
+      "id": "10",
       "name": "Trần Thị J",
       "job": "UI/UX Designer",
       "image": "https://randomuser.me/api/portraits/women/10.jpg",
-      "savedCourseList": [112, 113, 114, 115],
-      "cart": [112, 113, 115],
+      "savedCourseList": [
+        112,
+        113,
+        114,
+        115
+      ],
+      "cart": [
+        112,
+        113,
+        115
+      ],
       "userName": "tranthij",
       "password": "uxdesign",
       "purchaseCourse": {
-        "112": { "time_watched": 100 },
-        "114": { "time_watched": 75 },
-        "115": { "time_watched": 25 }
+        "112": {
+          "time_watched": 100
+        },
+        "114": {
+          "time_watched": 75
+        },
+        "115": {
+          "time_watched": 25
+        }
       }
+    },
+    {
+      "id": 1762178931677,
+      "name": "Phạm Khả Hào",
+      "job": "Sinh viên IUH",
+      "image": "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+      "userName": "haopham",
+      "password": "123456789",
+      "savedCourseList": [],
+      "cart": [],
+      "purchaseCourse": {}
     }
   ]
 }

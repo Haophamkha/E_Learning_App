@@ -23,12 +23,14 @@ interface InspiresCourseProps {
   course: InspireCourse;
   teachers?: Teacher[];
   onPress?: () => void;
+  saved?: boolean; // 🔹 Thêm prop saved
 }
 
 export const InspiresCourse = ({
   course,
   teachers = [],
   onPress,
+  saved = false, // mặc định false
 }: InspiresCourseProps) => {
   const teacher = teachers.find(
     (t) => String(t.id) === String(course.teacherId)
@@ -37,16 +39,20 @@ export const InspiresCourse = ({
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
-      {/* Ảnh khóa học */}
       <Image source={{ uri: course.image }} style={styles.image} />
 
-      {/* Nội dung */}
       <View style={styles.info}>
         <View style={styles.headerRow}>
           <Text style={styles.title} numberOfLines={1}>
             {course.name}
           </Text>
-          <CiBookmark size={30} style={styles.bookmark} />
+          <CiBookmark
+            size={30}
+            style={{
+              ...styles.bookmark, 
+              color: saved ? "#00BCD4" : "#777", 
+            }}
+          />
         </View>
 
         <Text style={styles.teacher}>{teacherName}</Text>
@@ -66,6 +72,7 @@ export const InspiresCourse = ({
     </TouchableOpacity>
   );
 };
+
 
 const styles = StyleSheet.create({
   card: {
