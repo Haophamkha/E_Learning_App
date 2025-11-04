@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
-
+import { MaterialIcons } from "@expo/vector-icons";
 import {
   StyleSheet,
   Text,
@@ -42,7 +42,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { currentUser } = useSelector((state: RootState) => state.auth);
-  const { courses, teachers, loading, error } = useSelector(
+  const { users,courses, teachers, loading, error } = useSelector(
     (state: RootState) => state.data
   );
 
@@ -179,6 +179,38 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
               style={styles.bannerImg}
             />
           </View>
+          {/* Categories */}
+          <View style={styles.categorySection}>
+            <Text style={styles.sectionTitle}>Categories</Text>
+
+            <View style={styles.grid}>
+              {[
+                { name: "Business", icon: "business-center" },
+                { name: "Design", icon: "palette" },
+                { name: "Code", icon: "code" },
+                { name: "Movie", icon: "movie" },
+                { name: "Language", icon: "language" },
+                { name: "Writing", icon: "article" },
+              ].map((cat) => (
+                <TouchableOpacity
+                  key={cat.name}
+                  style={styles.categoryItem}
+                  onPress={() =>
+                    navigation.navigate("Course_Listing", {
+                      category: cat.name,
+                    })
+                  }
+                >
+                  <MaterialIcons
+                    name={cat.icon as any}
+                    size={26}
+                    color="#00BCD4"
+                  />
+                  <Text style={styles.categoryText}>{cat.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
 
           {/* Popular Courses */}
           <SectionBlock title="Popular Courses">
@@ -192,7 +224,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
                     course,
                     teachers,
                     courses,
-                    users: [],
+                    users,
                   })
                 }
               />
@@ -211,7 +243,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
                     course,
                     teachers,
                     courses,
-                    users: [],
+                    users,
                   })
                 }
               />
@@ -324,4 +356,35 @@ const styles = StyleSheet.create({
   bannerImg: { width: 200, height: 150, resizeMode: "contain" },
   centered: { flex: 1, justifyContent: "center", alignItems: "center" },
   errorText: { color: "red", textAlign: "center", marginTop: 20 },
+  categorySection: {
+    marginTop: 20,
+    marginHorizontal: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 14,
+    color: "#111",
+  },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  categoryItem: {
+    width: "48%",
+    backgroundColor: "#F4F8FA",
+    borderRadius: 12,
+    paddingVertical: 20,
+    paddingHorizontal: 14,
+    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  categoryText: {
+    fontSize: 15,
+    marginLeft: 10,
+    color: "#111",
+    fontWeight: "500",
+  },
 });

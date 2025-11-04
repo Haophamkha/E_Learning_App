@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { User } from "../types/type"; // ✅ Dùng chung User interface của toàn app
+import { User } from "../types/type";
 
 export interface AuthState {
   currentUser: User | null;
@@ -7,8 +7,11 @@ export interface AuthState {
   error?: string | null;
 }
 
+// Lưu user = localStorage
+const storedUser = localStorage.getItem("currentUser");
+
 const initialState: AuthState = {
-  currentUser: null,
+  currentUser: storedUser ? JSON.parse(storedUser) : null,
   loading: false,
   error: null,
 };
@@ -24,6 +27,7 @@ const authSlice = createSlice({
     loginSuccess: (state, action: PayloadAction<User>) => {
       state.currentUser = action.payload;
       state.loading = false;
+      localStorage.setItem("currentUser", JSON.stringify(action.payload));
     },
     loginFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -31,11 +35,27 @@ const authSlice = createSlice({
     },
     logout: (state) => {
       state.currentUser = null;
+      state.loading = false;
+      localStorage.removeItem("currentUser"); 
+    },
+    updateUser: (state, action: PayloadAction<User>) => {
+      state.currentUser = action.payload;
+      localStorage.setItem("currentUser", JSON.stringify(action.payload));
+    },
+    updateCurrentUser: (state, action: PayloadAction<User>) => {
+      state.currentUser = { ...action.payload };
+      localStorage.setItem("currentUser", JSON.stringify(action.payload));
     },
   },
 });
 
-export const { loginStart, loginSuccess, loginFailure, logout } =
-  authSlice.actions;
+export const {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+  logout,
+  updateUser,
+  updateCurrentUser,
+} = authSlice.actions;
 
 export default authSlice.reducer;

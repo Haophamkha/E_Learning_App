@@ -18,9 +18,10 @@ import {
   logout,
 } from "../auth/authSlice";
 
+import { addUser } from "../auth/dataSlice";
+
 import { useUserCourseStatus } from "../hooks/useUserCourseStatus";
 import { User } from "../types/type";
-import axios from "axios";
 import { InspiresCourse } from "../components/InspiresCourse";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList, Course } from "../types/type";
@@ -34,7 +35,10 @@ export const UserProfileScreen = () => {
   const { currentUser, loading, error } = useSelector(
     (state: RootState) => state.auth
   );
-  const { courses, teachers } = useSelector((state: RootState) => state.data);
+  const { courses, teachers, users } = useSelector(
+    (state: RootState) => state.data
+  );
+
 
   const [isRegister, setIsRegister] = useState(false);
   const [userName, setUserName] = useState("");
@@ -46,58 +50,73 @@ export const UserProfileScreen = () => {
     currentUser,
     courses
   );
-
+  
   // 🧠 Login
-  const handleLogin = async () => {
+  // 🧠 Login with full debug logs
+  const handleLogin = () => {
     if (!userName || !password) {
       dispatch(loginFailure("Vui lòng nhập đầy đủ thông tin"));
       return;
     }
 
     dispatch(loginStart());
-    try {
-      const res = await axios.get("http://localhost:3000/users");
-      const user = res.data.find(
-        (u: User) => u.userName === userName && u.password === password
-      );
 
-      if (user) {
-        dispatch(loginSuccess(user));
-      } else {
-        dispatch(loginFailure("Sai tài khoản hoặc mật khẩu"));
-      }
-    } catch {
-      dispatch(loginFailure("Lỗi kết nối server"));
+    const user = users.find(
+      (u: User) =>
+        u.username?.toLowerCase() === userName.trim().toLowerCase() &&
+        u.password === password
+    );
+
+    if (!user) {
+      users.find(
+        (u: User) =>
+          u.name?.toLowerCase() === userName.toLowerCase() &&
+          u.password === password
+      );
+    }
+
+    if (user) {
+      dispatch(loginSuccess(user));
+    } else {
+      dispatch(loginFailure("Sai tài khoản hoặc mật khẩu"));
     }
   };
+
 
   // 🧠 Register
-  const handleRegister = async () => {
-    if (!userName || !password || !name) {
-      dispatch(loginFailure("Vui lòng nhập đầy đủ thông tin"));
-      return;
-    }
+  
 
-    try {
-      const newUser: User = {
-        id: Date.now(),
-        name,
-        job,
-        image: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-        userName,
-        password,
-        savedCourseList: [],
-        cart: [],
-        purchaseCourse: {},
-      };
+ const handleRegister = async () => {
+   if (!userName || !password || !name) {
+     dispatch(loginFailure("Vui lòng nhập đầy đủ thông tin"));
+     return;
+   }
 
-      const res = await axios.post("http://localhost:3000/users", newUser);
-      dispatch(loginSuccess(res.data));
-      setIsRegister(false);
-    } catch {
-      dispatch(loginFailure("Đăng ký thất bại"));
-    }
-  };
+   const existingUser = users.find((u) => u.username === userName);
+   if (existingUser) {
+     dispatch(loginFailure("Tên đăng nhập đã tồn tại"));
+     return;
+   }
+
+   const newUser = await addUser({
+     user_name: name,
+     job,
+     image: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+     username: userName,
+     password,
+   });
+
+   if (!newUser) {
+     dispatch(loginFailure("Đăng ký thất bại"));
+     return;
+   }
+
+   // Dispatch login success
+   dispatch(loginSuccess(newUser));
+   setIsRegister(false);
+ };
+
+
 
   // 🧠 Logout
   const handleLogout = () => dispatch(logout());
@@ -193,9 +212,8 @@ export const UserProfileScreen = () => {
   // 🧩 Nếu đã đăng nhập: render thông tin người dùng
   const user = currentUser as User;
   const savedCourses = courses.filter((c) =>
-    user.savedCourseList?.includes(Number(c.id))
+    user.savedcourselist?.includes(Number(c.id))
   );
-
 
   return (
     <ScrollView style={styles.container}>
@@ -252,7 +270,7 @@ export const UserProfileScreen = () => {
               key={course.id}
               course={course}
               teachers={teachers}
-              saved={user.savedCourseList.includes(Number(course.id))} // 🔹 đánh dấu đã save
+              saved={user.savedcourselist.includes(Number(course.id))}
               onPress={() => navigation.navigate("Course_Detail", { course })}
             />
           ))
@@ -265,6 +283,7 @@ export const UserProfileScreen = () => {
     </ScrollView>
   );
 };
+
 
 // 🎨 Style
 const styles = StyleSheet.create({

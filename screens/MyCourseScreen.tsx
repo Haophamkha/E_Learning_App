@@ -64,7 +64,11 @@ const filteredCourses = useMemo(() => {
           </Text>
           <TouchableOpacity
             style={styles.loginBtn}
-            onPress={() => navigation.navigate("Login" as never)}
+            onPress={() =>
+              (navigation.navigate as any)("MainTabs", {
+                screen: "UserProfile",
+              })
+            }
           >
             <Text style={styles.loginBtnText}>Đăng nhập ngay</Text>
           </TouchableOpacity>
@@ -199,7 +203,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignItems: "center",
   },
-  bannerText: { flex: 3, marginRight: 8 },
+  bannerText: { flex: 5, marginRight: 10 },
+  bannerImg: {
+    flex: 1,
+    maxWidth: 130,
+    height: 120,
+    resizeMode: "contain",
+    borderRadius: 12,
+    marginRight: 20,
+  },
+  
+
   bannerTitle: {
     color: "#fff",
     fontSize: 22,
@@ -214,14 +228,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   joinText: { color: "#00BCD4", fontWeight: "bold", fontSize: 16 },
-  bannerImg: {
-    flex: 1,
-    maxWidth: 130,
-    height: 120,
-    borderRadius: 12,
-    resizeMode: "cover",
-    marginLeft: 10,
-  },
 });
 
 export default MyCourseScreen;

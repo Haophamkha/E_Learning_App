@@ -11,16 +11,29 @@ export interface Chapter {
   lessons: Lesson[];
 }
 
+export interface ResourceFile {
+  url: string;
+  size: string;
+}
+
+export interface StudentProject {
+  userid: number;
+  nameprj: string;
+  imageprj: string;
+  resourse: ResourceFile[];
+}
+
 export interface Project {
   description: string;
+  studentproject: StudentProject[];
 }
 
 export interface QA {
-  userId: number;
-  postDate: string;
+  userid: number;
+  postdate: string;
   content: string;
   like: number;
-  commentCount: number;
+  commentcount: number;
 }
 
 export interface Review {
@@ -31,43 +44,43 @@ export interface Review {
 }
 
 export interface Course {
-  userId: number;
+  userid: number;
   id: number;
   name: string;
-  teacherId: number;
+  teacherid: number;
   price: number;
   discount?: number;
   vote: number;
-  voteCount: number;
+  votecount: number;
   like: number;
   share: number;
   category: string;
   duration?: string;
   description?: string;
-  lessonCount: number;
+  lessoncount: number;
   image: string;
   project?: Project;
   chapters?: Chapter[];
-  QA?: QA[];
+  qa?: QA[];
   reviews?: Review[];
 }
 
 export interface Teacher {
   id: number;
   name: string;
-  Job: string;
+  job: string;
   location: string;
-  timeWork: string;
+  timework: string;
   image: string;
   school: string;
-  userName?: string;
+  username?: string;
   password?: string;
   vote?: number;
-  voteCount?: number;
+  votecount?: number;
 }
 
 export interface UserCourseProgress {
-  [courseId: string]: {
+  [courseid: string]: {
     time_watched: number;
   };
 }
@@ -77,10 +90,10 @@ export interface User {
   name: string;
   job: string;
   image: string;
-  savedCourseList: number[];
-  userName: string;
+  savedcourselist: number[];
+  username: string;
   password: string;
-  purchaseCourse: UserCourseProgress;
+  purchasecourse: UserCourseProgress;
   cart: number[];
 }
 
@@ -93,10 +106,9 @@ export type RootStackParamList = {
     users?: User[];
   };
   Course_Listing: { keyword?: string; category?: string };
-  Learning: { course: Course }; 
+  Learning: { course: Course };
   TeacherProfile: { teacher: Teacher; courses: Course[] };
   Cart: { courses: Course[]; user: User };
-
 };
 
 export type RootTabParamList = {
@@ -104,4 +116,14 @@ export type RootTabParamList = {
   MyCourse: undefined;
   Course_Searching: undefined;
   UserProfile: { user?: User; courses?: Course[]; teacher?: Teacher[] };
+};
+
+export type Database = {
+  public: {
+    Tables: {
+      courses: Course;
+      teachers: Teacher;
+      users: User;
+    };
+  };
 };

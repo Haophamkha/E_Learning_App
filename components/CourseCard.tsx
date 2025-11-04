@@ -2,23 +2,11 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { FaRegStar } from "react-icons/fa";
 import { CiBookmark } from "react-icons/ci";
-
-interface Teacher {
-  id: number;
-  name: string;
-}
-
-interface Course {
-  id: number;
-  name: string;
-  teacherId: number;
-  price: number;
-  vote: number;
-  voteCount: number;
-  lessonCount: number;
-  category: string;
-  image: string;
-}
+import { Course, Teacher } from "../types/type";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../auth/store";
+import { toggleSavedCourse } from "../auth/dataSlice";
+import { updateCurrentUser } from "../auth/authSlice";
 
 interface CourseCardProps {
   course: Course;
@@ -31,47 +19,59 @@ export const CourseCard = ({
   teachers = [],
   onPress,
 }: CourseCardProps) => {
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+
   const teacher = teachers.find(
-    (t) => String(t.id) === String(course.teacherId)
+    (t) => String(t.id) === String(course.teacherid)
   );
   const teacherName = teacher ? teacher.name : "Unknown";
 
+  const saved = currentUser?.savedcourselist?.includes(course.id);
+
+  const handleToggleSaved = async () => {
+    if (!currentUser) return;
+
+    const updatedUser = await toggleSavedCourse(currentUser, course.id);
+    if (updatedUser) {
+      dispatch(updateCurrentUser(updatedUser)); // ✅ cập nhật đúng currentUser
+    }
+  };
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
-      
       <Image source={{ uri: course.image }} style={styles.image} />
-
       <View style={styles.info}>
         <View style={styles.titleRow}>
           <Text style={styles.title} numberOfLines={2}>
             {course.name}
           </Text>
-
-          <TouchableOpacity style={styles.bookmarkButton}>
-            <CiBookmark size={30} color="#333" />
+          <TouchableOpacity
+            style={styles.bookmarkButton}
+            onPress={handleToggleSaved}
+          >
+            <CiBookmark size={30} color={saved ? "#00BCD4" : "#333"} />
           </TouchableOpacity>
         </View>
-
         <Text style={styles.teacher} numberOfLines={1}>
           {teacherName}
         </Text>
-
         <Text style={styles.price}>
           {course.price.toLocaleString("vi-VN")}₫
         </Text>
-
         <View style={styles.row}>
           <FaRegStar color="#FFD700" size={12} />
           <Text style={styles.vote}>
-            {course.vote} ({course.voteCount})
+            {course.vote} ({course.votecount})
           </Text>
           <Text style={styles.dot}>•</Text>
-          <Text style={styles.lesson}>{course.lessonCount} bài học</Text>
+          <Text style={styles.lesson}>{course.lessoncount} bài học</Text>
         </View>
       </View>
     </TouchableOpacity>
   );
 };
+
 
 const styles = StyleSheet.create({
   card: {

@@ -13,29 +13,31 @@ export const useUserCourseStatus = (user: User | null, courses: Course[]) => {
 
   const ongoingCourses = useMemo(() => {
     if (!user) return [];
-    return Object.entries(user.purchaseCourse || {})
+    return Object.entries(user.purchasecourse || {})
       .map(([courseId, progressData]) => {
         const course = courses.find((c) => String(c.id) === String(courseId));
         if (!course) return null;
+
         const totalMinutes = parseDuration(course.duration);
         const watched = progressData.time_watched || 0;
         const progress = totalMinutes ? (watched / totalMinutes) * 100 : 0;
-        return progress > 0 && progress < 100
-          ? { ...course, time_watched: watched }
-          : null;
+
+        return progress < 100 ? { ...course, time_watched: watched } : null;
       })
       .filter((c): c is Course & { time_watched: number } => c !== null);
   }, [user, courses]);
 
   const completedCourses = useMemo(() => {
     if (!user) return [];
-    return Object.entries(user.purchaseCourse || {})
+    return Object.entries(user.purchasecourse || {})
       .map(([courseId, progressData]) => {
         const course = courses.find((c) => String(c.id) === String(courseId));
         if (!course) return null;
+
         const totalMinutes = parseDuration(course.duration);
         const watched = progressData.time_watched || 0;
         const progress = totalMinutes ? (watched / totalMinutes) * 100 : 0;
+
         return progress >= 100 ? { ...course, time_watched: watched } : null;
       })
       .filter((c): c is Course & { time_watched: number } => c !== null);

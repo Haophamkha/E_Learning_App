@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { FaRegStar } from "react-icons/fa";
-
 import { Teacher } from "../types/type";
 
 export const TeacherCard = ({
@@ -29,7 +28,7 @@ export const TeacherCard = ({
           <View style={styles.voteRow}>
             <FaRegStar color="#FFD700" />
             <Text style={styles.voteText}>
-              {teacher.vote.toFixed(1)} ({teacher.voteCount || 0})
+              {teacher.vote.toFixed(1)} ({teacher.votecount || 0})
             </Text>
           </View>
         )}

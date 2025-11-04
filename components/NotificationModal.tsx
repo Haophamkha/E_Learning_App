@@ -43,7 +43,7 @@ export const NotificationModal = ({
           </TouchableOpacity>
         </View>
 
-        {/* Scrollable list */}
+        {/* Thông báo List */}
         <ScrollView style={styles.scroll}>
           {notifications.length > 0 ? (
             notifications.map((item) => (
@@ -69,7 +69,7 @@ export const NotificationModal = ({
 const styles = StyleSheet.create({
   wrapper: {
     position: "absolute",
-    top: 55, // 🔽 vị trí ngay dưới icon notification (tùy icon nằm đâu)
+    top: 55, 
     right: 10,
     zIndex: 100,
   },

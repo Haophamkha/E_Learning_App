@@ -8,18 +8,27 @@ import {
   FlatList,
   Platform,
   TextInput as RNTextInput,
+  ActivityIndicator,
 } from "react-native";
 import { TextInput } from "react-native-paper";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../types/type";
+import {
+  RootStackParamList,
+  Course,
+  Teacher,
+  User,
+  RootTabParamList,
+} from "../types/type";
 import { SectionBlock } from "../components/SectionBlock";
-import { CourseCard } from "../components/CourseCard"; // hoặc InspiresCourse nếu bạn đã có
-import { getData } from "../hooks/useFetch";
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { RootTabParamList } from "../types/type";
-import { useNavigation } from "@react-navigation/native";
+import { CourseCard } from "../components/CourseCard";
 import { InspiresCourse } from "../components/InspiresCourse";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
+
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAppData } from "../auth/dataSlice";
+import { RootState, AppDispatch } from "../auth/store";
 
 type Props = BottomTabScreenProps<RootTabParamList, "Course_Searching">;
 type StackNav = NativeStackNavigationProp<RootStackParamList, "MainTabs">;
@@ -30,67 +39,55 @@ const CATEGORIES = [
   { name: "Code", icon: "code" },
   { name: "Movie", icon: "movie" },
   { name: "Language", icon: "language" },
+  { name: "Writing", icon: "article" },
 ];
 
 export const Course_SearchingScreen = ({ navigation }: Props) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { courses, teachers, users, loading, error } = useSelector(
+    (state: RootState) => state.data
+  );
+
   const [keyword, setKeyword] = useState("");
-  const [courses, setCourses] = useState<any[]>([]);
-  const [teachers, setTeachers] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
-  const [filteredCourses, setFilteredCourses] = useState<any[]>([]);
+  const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+
   const stackNav = useNavigation<StackNav>();
   const inputRef = useRef<RNTextInput | null>(null);
 
-  // --- Load dữ liệu ban đầu ---
+  //Load dữ liệu từ Redux
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [courseData, teacherData, userData] = await Promise.all([
-          getData("/courses"),
-          getData("/teachers"),
-          getData("/users"),
-        ]);
-        setCourses(courseData || []);
-        setTeachers(teacherData || []);
-        setUsers(userData || []);
-      } catch (err: any) {
-        console.log("❌ Không thể tải dữ liệu!", err);
-      }
-    };
-    fetchData();
-  }, []);
+    dispatch(fetchAppData());
+  }, [dispatch]);
 
-  // --- Lọc theo từ khóa ---
+  //Lọc theo từ khóa
   useEffect(() => {
     if (keyword.trim() === "") {
       setFilteredCourses(courses);
       return;
     }
     const results = courses.filter((c) =>
-      (c.title || c.name || "")
-        .toLowerCase()
-        .includes(keyword.toLowerCase())
+      ( c.name || "").toLowerCase().includes(keyword.toLowerCase())
     );
     setFilteredCourses(results);
   }, [keyword, courses]);
 
-  // --- Xử lý khi nhấn search ---
+  //Xử lý khi nhấn search
   const handleSearch = () => {
     if (!keyword.trim()) return;
     setShowDropdown(false);
     stackNav.navigate("Course_Listing", { keyword });
   };
 
-  // --- Chọn category ---
+  //Chọn category
   const handleCategoryPress = (cat: string) => {
     setShowDropdown(false);
     stackNav.navigate("Course_Listing", { category: cat });
   };
 
-  // --- Chọn item trong dropdown ---
-  const handleSelectCourse = (course: any) => {
-    setKeyword(course.title || course.name || "");
+  //Chọn item trong dropdown
+  const handleSelectCourse = (course: Course) => {
+    setKeyword(course.name || "");
     setShowDropdown(false);
     setTimeout(() => {
       stackNav.navigate("Course_Detail", {
@@ -101,6 +98,32 @@ export const Course_SearchingScreen = ({ navigation }: Props) => {
       });
     }, 100);
   };
+
+  if (loading) {
+    return (
+      <View
+        style={[
+          styles.root,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <ActivityIndicator size="large" color="#00BCD4" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View
+        style={[
+          styles.root,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <Text style={{ color: "red" }}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.root}>
@@ -129,12 +152,12 @@ export const Course_SearchingScreen = ({ navigation }: Props) => {
         </TouchableOpacity>
       </View>
 
-      {/* Dropdown hiển thị gợi ý (InspiresCourse style) */}
+      {/* Dropdown hiển thị gợi ý */}
       {showDropdown && filteredCourses.length > 0 && (
         <View style={styles.dropdown}>
           <FlatList
             data={filteredCourses}
-            keyExtractor={(item) => String(item.id ?? item._id ?? item.name)}
+            keyExtractor={(item) => String(item.id)}
             horizontal={false}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
@@ -143,7 +166,6 @@ export const Course_SearchingScreen = ({ navigation }: Props) => {
                 activeOpacity={0.9}
                 onPress={() => handleSelectCourse(item)}
               >
-                {/* Gọi component hiển thị course kiểu InspiresCourse */}
                 <InspiresCourse
                   course={item}
                   teachers={teachers}

@@ -1,27 +1,14 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { GoStarFill } from "react-icons/go";
-
-// === Types ===
-type User = {
-  id: number;
-  name: string;
-  avatar?: string;
-};
-
-type Review = {
-  userId: number;
-  postDate: string;
-  content: string;
-  vote: number;
-};
+import { User, Review } from "../types/type";
 
 interface ReviewCardProps {
   review: Review;
   user?: User;
 }
 
-// === Helper: tính số ngày trước ===
+//Tính số ngày
 const getDaysAgo = (postDate: string) => {
   const posted = new Date(postDate);
   const now = new Date();
@@ -33,18 +20,17 @@ const getDaysAgo = (postDate: string) => {
   return `${diffDays} ngày trước`;
 };
 
-// === Component ===
 export const ReviewCard = ({ review, user }: ReviewCardProps) => {
   const daysAgo = getDaysAgo(review.postDate);
 
   return (
     <View style={styles.card}>
-      {/* === Header: Avatar + Name + Rating === */}
+      {/* Header */}
       <View style={styles.header}>
         <Image
           source={{
             uri:
-              user?.avatar ||
+              user?.image ||
               "https://cdn-icons-png.flaticon.com/512/147/147144.png",
           }}
           style={styles.avatar}
@@ -54,7 +40,7 @@ export const ReviewCard = ({ review, user }: ReviewCardProps) => {
           <Text style={styles.date}>{daysAgo}</Text>
         </View>
 
-        {/* Rating stars */}
+        {/* Rating */}
         <View style={styles.ratingContainer}>
           {Array.from({ length: 5 }).map((_, i) => (
             <GoStarFill
@@ -67,13 +53,11 @@ export const ReviewCard = ({ review, user }: ReviewCardProps) => {
         </View>
       </View>
 
-      {/* === Content === */}
       <Text style={styles.content}>{review.content}</Text>
     </View>
   );
 };
 
-// === Styles ===
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "rgba(250, 246, 246, 1);",

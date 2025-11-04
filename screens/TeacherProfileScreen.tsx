@@ -26,7 +26,7 @@ export const TeacherProfileScreen = ({ route }: Props) => {
   const allCourses = useSelector((state: RootState) => state.data.courses);
 
   const teacherCourses = allCourses.filter(
-    (course) => String(course.teacherId) === String(teacher.id)
+    (course) => String(course.teacherid) === String(teacher.id)
   );
   console.log(
     `Courses for teacher ${teacher.name} (${teacher.id}):`,
@@ -63,9 +63,9 @@ export const TeacherProfileScreen = ({ route }: Props) => {
             <Text style={styles.labelTeacherText}>Teacher</Text>
           </View>
         </View>
-        <Text style={styles.jobText}>{teacher.Job}</Text>
+        <Text style={styles.jobText}>{teacher.job}</Text>
         <Text style={styles.locationText}>
-          {teacher.location} - {teacher.timeWork}
+          {teacher.location} - {teacher.timework}
         </Text>
       </View>
 
