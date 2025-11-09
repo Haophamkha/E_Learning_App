@@ -19,6 +19,7 @@ export const InspiresCourse = ({
   course,
   teachers = [],
   onPress,
+  
 }: InspiresCourseProps) => {
   const dispatch = useDispatch();
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);

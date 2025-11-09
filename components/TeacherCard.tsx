@@ -71,12 +71,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#222",
     textAlign: "center",
+    maxWidth: 160,
   },
   school: {
     fontSize: 14,
     color: "#555",
     marginTop: 4,
     textAlign: "center",
+    maxWidth: 160,
   },
   voteRow: {
     flexDirection: "row",

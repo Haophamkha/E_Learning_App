@@ -113,6 +113,7 @@ export const CartScreen = ({ navigation, route }: Props) => {
                         courses,
                       })
                     }
+                    saved={false}
                   />
                 </View>
 
@@ -128,7 +129,7 @@ export const CartScreen = ({ navigation, route }: Props) => {
                     style={styles.removeBtn}
                     onPress={() => handleRemoveFromCart(course.id)}
                   >
-                    <Text style={styles.removeText}>Remove</Text>
+                    <Text style={styles.removeText}>Xóa</Text>
                   </TouchableOpacity>
                 </View>
               </View>
