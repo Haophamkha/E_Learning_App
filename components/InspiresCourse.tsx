@@ -12,6 +12,7 @@ interface InspiresCourseProps {
   course: Course;
   teachers?: Teacher[];
   onPress?: () => void;
+  saved: boolean;
 }
 
 export const InspiresCourse = ({
