@@ -142,8 +142,6 @@ export const TeacherProfileScreen = ({ route }: Props) => {
   );
 };
 
-// styles giữ nguyên của bạn
-
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
   headerBackground: {

@@ -39,7 +39,6 @@ export const UserProfileScreen = () => {
     (state: RootState) => state.data
   );
 
-
   const [isRegister, setIsRegister] = useState(false);
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -50,7 +49,7 @@ export const UserProfileScreen = () => {
     currentUser,
     courses
   );
-  
+
   // 🧠 Login
   // 🧠 Login with full debug logs
   const handleLogin = () => {
@@ -82,41 +81,37 @@ export const UserProfileScreen = () => {
     }
   };
 
-
   // 🧠 Register
-  
 
- const handleRegister = async () => {
-   if (!userName || !password || !name) {
-     dispatch(loginFailure("Vui lòng nhập đầy đủ thông tin"));
-     return;
-   }
+  const handleRegister = async () => {
+    if (!userName || !password || !name) {
+      dispatch(loginFailure("Vui lòng nhập đầy đủ thông tin"));
+      return;
+    }
 
-   const existingUser = users.find((u) => u.username === userName);
-   if (existingUser) {
-     dispatch(loginFailure("Tên đăng nhập đã tồn tại"));
-     return;
-   }
+    const existingUser = users.find((u) => u.username === userName);
+    if (existingUser) {
+      dispatch(loginFailure("Tên đăng nhập đã tồn tại"));
+      return;
+    }
 
-   const newUser = await addUser({
-     user_name: name,
-     job,
-     image: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-     username: userName,
-     password,
-   });
+    const newUser = await addUser({
+      user_name: name,
+      job,
+      image: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+      username: userName,
+      password,
+    });
 
-   if (!newUser) {
-     dispatch(loginFailure("Đăng ký thất bại"));
-     return;
-   }
+    if (!newUser) {
+      dispatch(loginFailure("Đăng ký thất bại"));
+      return;
+    }
 
-   // Dispatch login success
-   dispatch(loginSuccess(newUser));
-   setIsRegister(false);
- };
-
-
+    // Dispatch login success
+    dispatch(loginSuccess(newUser));
+    setIsRegister(false);
+  };
 
   // 🧠 Logout
   const handleLogout = () => dispatch(logout());
@@ -283,7 +278,6 @@ export const UserProfileScreen = () => {
     </ScrollView>
   );
 };
-
 
 // 🎨 Style
 const styles = StyleSheet.create({

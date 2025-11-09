@@ -77,6 +77,7 @@ export interface Teacher {
   password?: string;
   vote?: number;
   votecount?: number;
+  status: "active" | "inactive";
 }
 
 export interface UserCourseProgress {
