@@ -10,10 +10,18 @@ export const TeacherCard = ({
   teacher: Teacher;
   onPress?: () => void;
 }) => {
+  // Đảm bảo không bị null hoặc undefined
+  const vote = teacher.vote != null ? teacher.vote.toFixed(1) : "0.0";
+  const voteCount = teacher.votecount ?? 0;
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
       {/* Avatar */}
-      <Image source={{ uri: teacher.image }} style={styles.avatar} />
+      <Image
+        source={{ uri: teacher.image }}
+        style={styles.avatar}
+        resizeMode="cover"
+      />
 
       {/* Info */}
       <View style={styles.info}>
@@ -24,14 +32,13 @@ export const TeacherCard = ({
           {teacher.school}
         </Text>
 
-        {teacher.vote !== undefined && (
-          <View style={styles.voteRow}>
-            <FaRegStar color="#FFD700" />
-            <Text style={styles.voteText}>
-              {teacher.vote.toFixed(1)} ({teacher.votecount || 0})
-            </Text>
-          </View>
-        )}
+        {/* Vote section */}
+        <View style={styles.voteRow}>
+          <FaRegStar color="#FFD700" />
+          <Text style={styles.voteText}>
+            {vote} ({voteCount})
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
