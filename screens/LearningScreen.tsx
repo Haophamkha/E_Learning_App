@@ -58,7 +58,9 @@ export const LearningScreen = ({ route }: Props) => {
     "X",
   ];
   const [newComment, setNewComment] = useState("");
-  const [qaList, setQaList] = useState(course.qa || []);
+  const [qaList, setQaList] = useState<any[]>(
+    Array.isArray(course.qa) ? course.qa : []
+  );
 
   const users = useSelector((state: RootState) => state.data.users);
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
@@ -92,7 +94,6 @@ export const LearningScreen = ({ route }: Props) => {
     }
   };
 
-  // 🟢 Hàm icon theo đuôi file
   const getFileIconComponent = (ext?: string) => {
     switch (ext?.toLowerCase()) {
       case "pdf":
@@ -153,60 +154,69 @@ export const LearningScreen = ({ route }: Props) => {
         {/* LESSONS */}
         {activeTab === "LESSONS" && (
           <ScrollView showsVerticalScrollIndicator={false}>
-            {course.chapters?.map((chapter, chapterIndex) => (
-              <View
-                key={chapter.order || chapterIndex}
-                style={{ marginBottom: 10 }}
-              >
-                <View style={styles.chapterHeader}>
-                  <Text style={styles.chapterTitle}>
-                    {`Chương ${
-                      romanNumerals[chapterIndex] || chapterIndex + 1
-                    }: ${chapter.title}`}
-                  </Text>
-                </View>
+            {Array.isArray(course.chapters) && course.chapters.length > 0 ? (
+              course.chapters.map((chapter, chapterIndex) => (
+                <View
+                  key={chapter.order ?? chapterIndex}
+                  style={{ marginBottom: 10 }}
+                >
+                  <View style={styles.chapterHeader}>
+                    <Text style={styles.chapterTitle}>
+                      {`Chương ${
+                        romanNumerals[chapterIndex] || chapterIndex + 1
+                      }: ${chapter.title}`}
+                    </Text>
+                  </View>
 
-                {chapter.lessons.map((lesson, index) => {
-                  const isSelected = selectedLessonId === lesson.id;
-                  return (
-                    <TouchableOpacity
-                      key={lesson.id}
-                      style={[
-                        styles.lessonRow,
-                        isSelected && styles.lessonRowSelected,
-                      ]}
-                      onPress={() => setSelectedLessonId(lesson.id)}
-                    >
-                      <Text style={styles.lessonIndex}>
-                        {index + 1 < 10 ? `0${index + 1}` : index + 1}
-                      </Text>
-                      <View style={{ flex: 1 }}>
-                        <Text
+                  {Array.isArray(chapter.lessons) &&
+                  chapter.lessons.length > 0 ? (
+                    chapter.lessons.map((lesson, index) => {
+                      const isSelected = selectedLessonId === lesson.id;
+                      return (
+                        <TouchableOpacity
+                          key={lesson.id}
                           style={[
-                            styles.lessonTitle,
-                            isSelected && styles.lessonTitleSelected,
+                            styles.lessonRow,
+                            isSelected && styles.lessonRowSelected,
                           ]}
+                          onPress={() => setSelectedLessonId(lesson.id)}
                         >
-                          {lesson.title}
-                        </Text>
-                        <Text style={styles.lessonDuration}>
-                          {lesson.duration}
-                        </Text>
-                      </View>
-                      {lesson.status === "completed" && (
-                        <TiTick size={20} color="#0055FF" />
-                      )}
-                      {lesson.status === "inprogress" && (
-                        <IoPlayOutline size={20} color="#00BCD4" />
-                      )}
-                      {lesson.status === "not_started" && (
-                        <MdOutlineLock size={20} color="#AAA" />
-                      )}
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            ))}
+                          <Text style={styles.lessonIndex}>
+                            {index + 1 < 10 ? `0${index + 1}` : index + 1}
+                          </Text>
+                          <View style={{ flex: 1 }}>
+                            <Text
+                              style={[
+                                styles.lessonTitle,
+                                isSelected && styles.lessonTitleSelected,
+                              ]}
+                            >
+                              {lesson.title}
+                            </Text>
+                            <Text style={styles.lessonDuration}>
+                              {lesson.duration || "00:00"}
+                            </Text>
+                          </View>
+                          {lesson.status === "completed" && (
+                            <TiTick size={20} color="#0055FF" />
+                          )}
+                          {lesson.status === "inprogress" && (
+                            <IoPlayOutline size={20} color="#00BCD4" />
+                          )}
+                          {lesson.status === "not_started" && (
+                            <MdOutlineLock size={20} color="#AAA" />
+                          )}
+                        </TouchableOpacity>
+                      );
+                    })
+                  ) : (
+                    <Text style={styles.sectionText}>Chưa có bài học nào.</Text>
+                  )}
+                </View>
+              ))
+            ) : (
+              <Text style={styles.sectionText}>Chưa có chương nào.</Text>
+            )}
           </ScrollView>
         )}
 
@@ -427,10 +437,10 @@ export const LearningScreen = ({ route }: Props) => {
                             description: "",
                             studentproject: [],
                           };
-                          course.project = updatedCourse.project;
-                          setStudentProjects(
-                            updatedCourse.project.studentproject
-                          );
+                        course.project = updatedCourse.project;
+                        setStudentProjects(
+                          updatedCourse.project.studentproject
+                        );
                         // Reset modal
                         setProjectName("");
                         setProjectDescription("");
@@ -540,9 +550,9 @@ export const LearningScreen = ({ route }: Props) => {
           <View style={styles.tabContent}>
             <Text style={styles.sectionTitle}>Question & Answer</Text>
 
-            {enrichedQAList.length > 0 ? (
+            {Array.isArray(enrichedQAList) && enrichedQAList.length > 0 ? (
               enrichedQAList.map((item, index) => (
-                <View key={index} style={styles.qaCard}>
+                <View key={item.id || index} style={styles.qaCard}>
                   <View style={styles.qaHeader}>
                     <Image
                       source={{ uri: item.userAvatar }}
@@ -572,7 +582,7 @@ export const LearningScreen = ({ route }: Props) => {
                         size={18}
                         color="#ff4081"
                       />
-                      <Text style={styles.qaStatText}>{item.like}</Text>
+                      <Text style={styles.qaStatText}>{item.like || 0}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.qaStat}>
@@ -581,7 +591,9 @@ export const LearningScreen = ({ route }: Props) => {
                         size={18}
                         color="#00BCD4"
                       />
-                      <Text style={styles.qaStatText}>{item.commentcount}</Text>
+                      <Text style={styles.qaStatText}>
+                        {item.commentcount || 0}
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
