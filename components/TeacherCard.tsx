@@ -10,7 +10,6 @@ export const TeacherCard = ({
   teacher: Teacher;
   onPress?: () => void;
 }) => {
-  // Đảm bảo không bị null hoặc undefined
   const vote = teacher.vote != null ? teacher.vote.toFixed(1) : "0.0";
   const voteCount = teacher.votecount ?? 0;
 
