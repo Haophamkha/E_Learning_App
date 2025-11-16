@@ -1,5 +1,4 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../types/type";
+import React from "react";
 import {
   StyleSheet,
   Text,
@@ -9,12 +8,14 @@ import {
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../types/type";
 import { InspiresCourse } from "../components/InspiresCourse";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppDispatch } from "../auth/store"; 
+import { RootState, AppDispatch } from "../auth/store";
 import { supabase } from "../auth/supabaseClient";
 import { updateUser } from "../auth/authSlice";
-import { addToPurchaseCourse, fetchAppData } from "../auth/dataSlice"; 
+import { addToPurchaseCourse, fetchAppData } from "../auth/dataSlice";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Cart">;
 
@@ -32,7 +33,7 @@ export const CartScreen = ({ navigation, route }: Props) => {
   // Xóa khỏi giỏ hàng
   const handleRemoveFromCart = async (courseId: number) => {
     if (!currentUser) {
-      Alert.alert("Vui lòng đăng nhập để sử dụng tính năng này!");
+      Alert.alert("Lỗi", "Vui lòng đăng nhập để sử dụng tính năng này!");
       return;
     }
 
@@ -46,17 +47,18 @@ export const CartScreen = ({ navigation, route }: Props) => {
         .single();
 
       if (error) throw error;
+
       dispatch(updateUser(data));
-      Alert.alert("🗑️ Đã xóa khỏi giỏ hàng!");
-    } catch (err) {
-      Alert.alert("Lỗi khi xóa khỏi giỏ hàng.");
+      Alert.alert("Thành công", "Đã xóa khỏi giỏ hàng!");
+    } catch (err: any) {
+      Alert.alert("Lỗi", err.message || "Không thể xóa khỏi giỏ hàng.");
     }
   };
 
   // Mua khóa học
   const handleBuyCourse = async (course: any) => {
     if (!currentUser) {
-      Alert.alert("Vui lòng đăng nhập để sử dụng tính năng này!");
+      Alert.alert("Lỗi", "Vui lòng đăng nhập để mua khóa học!");
       return;
     }
 
@@ -66,7 +68,7 @@ export const CartScreen = ({ navigation, route }: Props) => {
       if (data) {
         dispatch(updateUser(data));
 
-        // Gọi lại api để lấy user mới nhất
+        // Lấy user mới nhất từ DB
         const { data: freshUser, error: userError } = await supabase
           .from("users")
           .select("*")
@@ -75,16 +77,13 @@ export const CartScreen = ({ navigation, route }: Props) => {
 
         if (userError) throw userError;
 
-        // Cập nhật lại Redux bằng user thực tế từ DB
         dispatch(updateUser(freshUser));
-
-        // Làm mới toàn bộ dữ liệu
         await dispatch(fetchAppData());
 
-        Alert.alert("🎉 Thành công", `Bạn đã mua khóa học: ${course.name}`);
+        Alert.alert("Thành công", `Bạn đã mua khóa học: ${course.name}`);
       }
-    } catch (err) {
-      Alert.alert("Lỗi khi mua khóa học.");
+    } catch (err: any) {
+      Alert.alert("Lỗi", err.message || "Không thể mua khóa học.");
     }
   };
 
@@ -94,10 +93,15 @@ export const CartScreen = ({ navigation, route }: Props) => {
 
       {cartCourses.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text>Chưa có khóa học nào trong giỏ hàng.</Text>
+          <Text style={styles.emptyText}>
+            Chưa có khóa học nào trong giỏ hàng.
+          </Text>
         </View>
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        >
           {cartCourses.map((course) => (
             <View key={course.id} style={styles.cardContainer}>
               <View style={styles.cardContent}>
@@ -142,9 +146,28 @@ export const CartScreen = ({ navigation, route }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#f8f9fa", padding: 16 },
-  title: { fontSize: 22, fontWeight: "bold", color: "#333", marginBottom: 16 },
-  emptyContainer: { alignItems: "center", marginTop: 40 },
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f8f9fa",
+    padding: 16,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 60,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#888",
+  },
   cardContainer: {
     backgroundColor: "#fff",
     borderRadius: 12,
@@ -154,15 +177,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 3,
   },
   cardContent: {
     flexDirection: "row",
     alignItems: "center",
   },
   btnGroup: {
-    justifyContent: "space-between",
-    alignItems: "center",
     marginLeft: 12,
     gap: 8,
   },
@@ -172,13 +193,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 8,
   },
-  buyText: { color: "#fff", fontWeight: "bold", fontSize: 15 },
-
+  buyText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 15,
+  },
   removeBtn: {
     backgroundColor: "#f44336",
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 8,
   },
-  removeText: { color: "#fff", fontWeight: "bold", fontSize: 15 },
+  removeText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 15,
+  },
 });
+
+export default CartScreen;

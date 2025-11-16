@@ -52,7 +52,7 @@ export interface Course {
   discount?: number;
   vote: number;
   votecount: number;
-  like: number;
+  likes: number;
   share: number;
   category: string;
   duration?: string;

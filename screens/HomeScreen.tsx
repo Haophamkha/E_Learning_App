@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import {
   StyleSheet,
   Text,
@@ -12,12 +12,8 @@ import {
 } from "react-native";
 import { Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { CiShoppingCart } from "react-icons/ci";
-import { IoIosNotificationsOutline } from "react-icons/io";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
-
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { RootStackParamList, RootTabParamList } from "../types/type";
 
@@ -42,7 +38,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { currentUser } = useSelector((state: RootState) => state.auth);
-  const { users,courses, teachers, loading, error } = useSelector(
+  const { users, courses, teachers, loading, error } = useSelector(
     (state: RootState) => state.data
   );
 
@@ -114,7 +110,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
                   });
                 }}
               >
-                <CiShoppingCart color="white" size={30} />
+                <Ionicons name="cart-outline" size={30} color="white" />
               </TouchableOpacity>
 
               {/* Notification */}
@@ -122,7 +118,11 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
                 style={{ marginLeft: 16 }}
                 onPress={() => setShowNotifications(true)}
               >
-                <IoIosNotificationsOutline color="white" size={30} />
+                <Ionicons
+                  name="notifications-outline"
+                  size={30}
+                  color="white"
+                />
               </TouchableOpacity>
 
               {/* Avatar + Dropdown */}
@@ -179,6 +179,7 @@ export const HomeScreen = ({ navigation }: { navigation: HomeNavProp }) => {
               style={styles.bannerImg}
             />
           </View>
+
           {/* Categories */}
           <View style={styles.categorySection}>
             <Text style={styles.sectionTitle}>Categories</Text>
@@ -388,3 +389,5 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
 });
+
+export default HomeScreen;

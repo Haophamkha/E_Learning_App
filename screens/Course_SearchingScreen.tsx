@@ -55,37 +55,32 @@ export const Course_SearchingScreen = ({ navigation }: Props) => {
   const stackNav = useNavigation<StackNav>();
   const inputRef = useRef<RNTextInput | null>(null);
 
-  //Load dữ liệu từ Redux
   useEffect(() => {
     dispatch(fetchAppData());
   }, [dispatch]);
 
-  //Lọc theo từ khóa
   useEffect(() => {
     if (keyword.trim() === "") {
       setFilteredCourses(courses);
       return;
     }
     const results = courses.filter((c) =>
-      ( c.name || "").toLowerCase().includes(keyword.toLowerCase())
+      (c.name || "").toLowerCase().includes(keyword.toLowerCase())
     );
     setFilteredCourses(results);
   }, [keyword, courses]);
 
-  //Xử lý khi nhấn search
   const handleSearch = () => {
     if (!keyword.trim()) return;
     setShowDropdown(false);
     stackNav.navigate("Course_Listing", { keyword });
   };
 
-  //Chọn category
   const handleCategoryPress = (cat: string) => {
     setShowDropdown(false);
     stackNav.navigate("Course_Listing", { category: cat });
   };
 
-  //Chọn item trong dropdown
   const handleSelectCourse = (course: Course) => {
     setKeyword(course.name || "");
     setShowDropdown(false);
@@ -127,7 +122,6 @@ export const Course_SearchingScreen = ({ navigation }: Props) => {
 
   return (
     <View style={styles.root}>
-      {/* Search Bar */}
       <View style={styles.searchBarWrap}>
         <TextInput
           ref={(r: any) => (inputRef.current = r)}
@@ -152,7 +146,6 @@ export const Course_SearchingScreen = ({ navigation }: Props) => {
         </TouchableOpacity>
       </View>
 
-      {/* Dropdown hiển thị gợi ý */}
       {showDropdown && filteredCourses.length > 0 && (
         <View style={styles.dropdown}>
           <FlatList
@@ -177,13 +170,11 @@ export const Course_SearchingScreen = ({ navigation }: Props) => {
         </View>
       )}
 
-      {/* Nội dung chính */}
       <ScrollView
         style={styles.container}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingBottom: 80 }}
       >
-        {/* Categories */}
         <View style={styles.headerRow}>
           <Text style={styles.sectionTitle}>Categories</Text>
         </View>
@@ -200,7 +191,6 @@ export const Course_SearchingScreen = ({ navigation }: Props) => {
           </TouchableOpacity>
         ))}
 
-        {/* Recommended */}
         <SectionBlock title="Recommended for you">
           {courses.map((course) => (
             <CourseCard
@@ -288,3 +278,5 @@ const styles = StyleSheet.create({
     color: "#111",
   },
 });
+
+export default Course_SearchingScreen;

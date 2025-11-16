@@ -7,13 +7,21 @@
       "android": {
         "buildType": "apk"
       },
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "your-supabase-url",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "your-supabase-anon-key"
+      }
     },
     "production": {
       "android": {
         "buildType": "app-bundle"
       },
-      "distribution": "store"
+      "distribution": "store",
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "your-supabase-url",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "your-supabase-anon-key"
+      }
     }
   }
 }

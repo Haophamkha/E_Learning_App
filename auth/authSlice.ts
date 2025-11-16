@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { User } from "../types/type";
 
 export interface AuthState {
@@ -7,11 +8,35 @@ export interface AuthState {
   error?: string | null;
 }
 
-// Lưu user = localStorage
-const storedUser = localStorage.getItem("currentUser");
+export const loadUserFromStorage = createAsyncThunk(
+  "auth/loadUserFromStorage",
+  async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("currentUser");
+      return jsonValue ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+);
+
+export const saveUserToStorage = createAsyncThunk(
+  "auth/saveUserToStorage",
+  async (user: User) => {
+    await AsyncStorage.setItem("currentUser", JSON.stringify(user));
+    return user;
+  }
+);
+
+export const removeUserFromStorage = createAsyncThunk(
+  "auth/removeUserFromStorage",
+  async () => {
+    await AsyncStorage.removeItem("currentUser");
+  }
+);
 
 const initialState: AuthState = {
-  currentUser: storedUser ? JSON.parse(storedUser) : null,
+  currentUser: null,
   loading: false,
   error: null,
 };
@@ -27,7 +52,7 @@ const authSlice = createSlice({
     loginSuccess: (state, action: PayloadAction<User>) => {
       state.currentUser = action.payload;
       state.loading = false;
-      localStorage.setItem("currentUser", JSON.stringify(action.payload));
+      state.error = null;
     },
     loginFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -36,16 +61,43 @@ const authSlice = createSlice({
     logout: (state) => {
       state.currentUser = null;
       state.loading = false;
-      localStorage.removeItem("currentUser"); 
+      state.error = null;
     },
     updateUser: (state, action: PayloadAction<User>) => {
       state.currentUser = action.payload;
-      localStorage.setItem("currentUser", JSON.stringify(action.payload));
+      state.loading = false;
     },
     updateCurrentUser: (state, action: PayloadAction<User>) => {
       state.currentUser = { ...action.payload };
-      localStorage.setItem("currentUser", JSON.stringify(action.payload));
+      state.loading = false;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Load user khi khởi động
+      .addCase(loadUserFromStorage.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(loadUserFromStorage.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+      })
+      .addCase(loadUserFromStorage.rejected, (state) => {
+        state.loading = false;
+      })
+
+      // Lưu user (kết hợp loginSuccess)
+      .addCase(saveUserToStorage.fulfilled, (state, action) => {
+        state.currentUser = action.payload;
+        state.loading = false;
+        state.error = null;
+      })
+
+      .addCase(removeUserFromStorage.fulfilled, (state) => {
+        state.currentUser = null;
+        state.loading = false;
+        state.error = null;
+      });
   },
 });
 

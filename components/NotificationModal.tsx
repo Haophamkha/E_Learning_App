@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { IoDocumentTextOutline } from "react-icons/io5";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Notification {
   id: number;
@@ -34,22 +34,26 @@ export const NotificationModal = ({
       onPress={onClose}
       style={styles.wrapper}
     >
-      <View style={styles.popup}>
+      <View style={styles.popup} onStartShouldSetResponder={() => true}>
         {/* Header */}
         <View style={styles.headerRow}>
           <Text style={styles.header}>Thông báo</Text>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.closeIcon}>✕</Text>
+            <Text style={styles.closeIcon}>×</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Thông báo List */}
+        {/* Notification List */}
         <ScrollView style={styles.scroll}>
           {notifications.length > 0 ? (
             notifications.map((item) => (
               <View key={item.id} style={styles.item}>
                 <View style={styles.row}>
-                  <IoDocumentTextOutline size={18} color="#d84315" />
+                  <Ionicons
+                    name="document-text-outline"
+                    size={18}
+                    color="#d84315"
+                  />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.text}>{item.message}</Text>
                     <Text style={styles.time}>{item.time}</Text>
@@ -69,7 +73,7 @@ export const NotificationModal = ({
 const styles = StyleSheet.create({
   wrapper: {
     position: "absolute",
-    top: 55, 
+    top: 55,
     right: 10,
     zIndex: 100,
   },

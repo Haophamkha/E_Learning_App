@@ -11,7 +11,6 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SectionBlock } from "../components/SectionBlock";
 import { CourseCard } from "../components/CourseCard";
 import { RootStackParamList } from "../types/type";
-
 import { useSelector } from "react-redux";
 import { RootState } from "../auth/store";
 
@@ -26,16 +25,12 @@ export const TeacherProfileScreen = ({ route }: Props) => {
   const allCourses = useSelector((state: RootState) => state.data.courses);
 
   const teacherCourses = allCourses.filter(
-    (course) => String(course.teacherid) === String(teacher.id)
-  );
-  console.log(
-    `Courses for teacher ${teacher.name} (${teacher.id}):`,
-    teacherCourses
+    (course) => course.teacherid === teacher.id
   );
 
   return (
     <View style={styles.container}>
-      {/* Header & Avatar */}
+      {/* Header Background */}
       <View style={styles.headerBackground}>
         <Image
           source={{
@@ -46,18 +41,14 @@ export const TeacherProfileScreen = ({ route }: Props) => {
         />
       </View>
 
+      {/* Avatar */}
       <View style={styles.avatarWrapper}>
         <Image source={{ uri: teacher.image }} style={styles.avatar} />
       </View>
 
+      {/* Teacher Info */}
       <View style={styles.infoContainer}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 0,
-          }}
-        >
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={styles.teacherName}>{teacher.name}</Text>
           <View style={[styles.labelTeacher, { marginLeft: 8 }]}>
             <Text style={styles.labelTeacherText}>Teacher</Text>
@@ -89,7 +80,7 @@ export const TeacherProfileScreen = ({ route }: Props) => {
         ))}
       </View>
 
-      {/* Tab content */}
+      {/* Tab Content */}
       <View style={{ flex: 1 }}>
         {activeTab === "OVERVIEW" && (
           <ScrollView style={{ paddingHorizontal: 16 }}>
@@ -101,7 +92,7 @@ export const TeacherProfileScreen = ({ route }: Props) => {
         {activeTab === "COURSES" && (
           <ScrollView style={{ paddingHorizontal: 16 }}>
             {teacherCourses.length === 0 ? (
-              <Text style={{ textAlign: "center", marginVertical: 20 }}>
+              <Text style={styles.noDataText}>
                 No courses found for this teacher.
               </Text>
             ) : (
@@ -132,7 +123,7 @@ export const TeacherProfileScreen = ({ route }: Props) => {
 
         {activeTab === "REVIEW" && (
           <ScrollView style={{ paddingHorizontal: 16 }}>
-            <Text style={{ textAlign: "center", marginVertical: 20 }}>
+            <Text style={styles.noDataText}>
               Reviews will be displayed here.
             </Text>
           </ScrollView>
@@ -144,91 +135,46 @@ export const TeacherProfileScreen = ({ route }: Props) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
-  headerBackground: {
-    height: 180,
-    backgroundColor: "#eee",
-  },
-  headerImage: {
-    width: "100%",
-    height: "100%",
-  },
+  headerBackground: { height: 180 },
+  headerImage: { width: "100%", height: "100%" },
   avatarWrapper: {
     position: "absolute",
     top: 120,
     alignSelf: "center",
     borderRadius: 50,
-    overflow: "hidden",
     borderWidth: 3,
     borderColor: "#fff",
+    overflow: "hidden",
   },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
+  avatar: { width: 100, height: 100, borderRadius: 50 },
   infoContainer: {
     marginTop: 60,
     alignItems: "center",
     paddingHorizontal: 16,
   },
-  teacherName: {
-    fontSize: 26,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
+  teacherName: { fontSize: 26, fontWeight: "bold" },
   labelTeacher: {
     backgroundColor: "#00BCD4",
     paddingHorizontal: 10,
     paddingVertical: 3,
     borderRadius: 12,
-    marginBottom: 6,
   },
-  labelTeacherText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  jobText: {
-    fontSize: 18,
-    color: "#333",
-    marginBottom: 2,
-  },
-  locationText: {
-    fontSize: 16,
-    color: "#666",
-  },
+  labelTeacherText: { color: "#fff", fontWeight: "bold", fontSize: 14 },
+  jobText: { fontSize: 18, color: "#333", marginVertical: 2 },
+  locationText: { fontSize: 16, color: "#666" },
   tabContainer: {
     flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
     marginTop: 20,
   },
-  tabItem: {
-    flex: 1,
-    paddingVertical: 16,
-    alignItems: "center",
-  },
-  tabItemActive: {
-    borderBottomWidth: 3,
-    borderBottomColor: "#00BCD4",
-  },
-  tabText: {
-    fontSize: 18,
-    color: "#666",
-    fontWeight: "500",
-  },
-  tabTextActive: {
-    fontWeight: "bold",
-    color: "#00BCD4",
-  },
-  sectionTitle: {
-    fontWeight: "bold",
-    fontSize: 20,
-    marginTop: 12,
-  },
-  sectionContent: {
-    fontSize: 16,
-    color: "#444",
-    marginTop: 4,
-  },
+  tabItem: { flex: 1, paddingVertical: 16, alignItems: "center" },
+  tabItemActive: { borderBottomWidth: 3, borderBottomColor: "#00BCD4" },
+  tabText: { fontSize: 18, color: "#666", fontWeight: "500" },
+  tabTextActive: { fontWeight: "bold", color: "#00BCD4" },
+  sectionTitle: { fontWeight: "bold", fontSize: 20, marginTop: 12 },
+  sectionContent: { fontSize: 16, color: "#444", marginTop: 4 },
+  noDataText: { textAlign: "center", marginVertical: 20, color: "#888" },
 });
+
+export default TeacherProfileScreen;

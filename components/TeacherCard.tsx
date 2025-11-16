@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { FaRegStar } from "react-icons/fa";
+import { FontAwesome } from "@expo/vector-icons";
 import { Teacher } from "../types/type";
 
 export const TeacherCard = ({
@@ -15,14 +15,12 @@ export const TeacherCard = ({
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
-      {/* Avatar */}
       <Image
         source={{ uri: teacher.image }}
         style={styles.avatar}
         resizeMode="cover"
       />
 
-      {/* Info */}
       <View style={styles.info}>
         <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
           {teacher.name}
@@ -31,9 +29,8 @@ export const TeacherCard = ({
           {teacher.school}
         </Text>
 
-        {/* Vote section */}
         <View style={styles.voteRow}>
-          <FaRegStar color="#FFD700" />
+          <FontAwesome name="star-o" color="#FFD700" size={16} />
           <Text style={styles.voteText}>
             {vote} ({voteCount})
           </Text>
@@ -84,10 +81,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 8,
+    gap: 6,
   },
   voteText: {
     fontSize: 14,
     color: "#444",
-    marginLeft: 6,
   },
 });

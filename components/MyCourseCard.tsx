@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Course } from "../types/type";
-
+import { useMemo } from "react";
 type Props = {
   course: Course & {
     time_watched?: number;
@@ -36,11 +36,18 @@ export const MyCourseCard = ({ course, onPress }: Props) => {
     }`.trim();
   };
 
-const totalDuration = parseDuration(course.duration || "");
+const totalDuration = useMemo(
+  () => parseDuration(course.duration || ""),
+  [course.duration]
+);
 
-  const progress = totalDuration
-    ? Math.min(100, Math.round((watched / totalDuration) * 100))
-    : 0;
+const progress = useMemo(
+  () =>
+    totalDuration
+      ? Math.min(100, Math.round((watched / totalDuration) * 100))
+      : 0,
+  [watched, totalDuration]
+);
 
   return (
     <TouchableOpacity

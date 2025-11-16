@@ -13,9 +13,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../auth/store";
 import {
   loginStart,
-  loginSuccess,
   loginFailure,
   logout,
+  saveUserToStorage,
+  removeUserFromStorage, 
 } from "../auth/authSlice";
 
 import { addUser } from "../auth/dataSlice";
@@ -30,7 +31,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const UserProfileScreen = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<any>(); // AppDispatch nếu bạn dùng
   const navigation = useNavigation<NavProp>();
   const { currentUser, loading, error } = useSelector(
     (state: RootState) => state.auth
@@ -50,9 +51,8 @@ export const UserProfileScreen = () => {
     courses
   );
 
-  // 🧠 Login
-  // 🧠 Login with full debug logs
-  const handleLogin = () => {
+  // LOGIN - ĐÃ SỬA
+  const handleLogin = async () => {
     if (!userName || !password) {
       dispatch(loginFailure("Vui lòng nhập đầy đủ thông tin"));
       return;
@@ -67,21 +67,17 @@ export const UserProfileScreen = () => {
     );
 
     if (!user) {
-      users.find(
-        (u: User) =>
-          u.name?.toLowerCase() === userName.toLowerCase() &&
-          u.password === password
-      );
+      dispatch(loginFailure("Sai tài khoản hoặc mật khẩu"));
+      return;
     }
 
-    if (user) {
-      dispatch(loginSuccess(user));
-    } else {
-      dispatch(loginFailure("Sai tài khoản hoặc mật khẩu"));
+    try {
+      // Lưu vào AsyncStorage + cập nhật Redux
+      await dispatch(saveUserToStorage(user)).unwrap();
+    } catch (err) {
+      dispatch(loginFailure("Lưu thông tin thất bại"));
     }
   };
-
-  // 🧠 Register
 
   const handleRegister = async () => {
     if (!userName || !password || !name) {
@@ -95,28 +91,39 @@ export const UserProfileScreen = () => {
       return;
     }
 
-    const newUser = await addUser({
-      user_name: name,
-      job,
-      image: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-      username: userName,
-      password,
-    });
+    try {
+      const newUser = await addUser({
+        user_name: name,
+        job,
+        image: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+        username: userName,
+        password,
+      });
 
-    if (!newUser) {
-      dispatch(loginFailure("Đăng ký thất bại"));
-      return;
+      if (!newUser) {
+        dispatch(loginFailure("Đăng ký thất bại"));
+        return;
+      }
+
+      // Lưu vào AsyncStorage + cập nhật Redux
+      await dispatch(saveUserToStorage(newUser)).unwrap();
+      setIsRegister(false);
+    } catch (err: any) {
+      dispatch(loginFailure(err.message || "Đăng ký thất bại"));
     }
-
-    // Dispatch login success
-    dispatch(loginSuccess(newUser));
-    setIsRegister(false);
   };
 
-  // 🧠 Logout
-  const handleLogout = () => dispatch(logout());
+  // LOGOUT - ĐÃ SỬA
+  const handleLogout = async () => {
+    try {
+      await dispatch(removeUserFromStorage()).unwrap();
+      dispatch(logout()); // Xóa Redux state
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
-  // 🧩 Nếu chưa đăng nhập: render login/register UI
+  // UI: Chưa đăng nhập
   if (!currentUser) {
     return (
       <View style={styles.authContainer}>
@@ -181,6 +188,7 @@ export const UserProfileScreen = () => {
           <TouchableOpacity
             style={styles.btn}
             onPress={isRegister ? handleRegister : handleLogin}
+            disabled={loading}
           >
             <Text style={styles.btnText}>
               {loading ? "Đang xử lý..." : isRegister ? "Đăng ký" : "Đăng nhập"}
@@ -204,7 +212,7 @@ export const UserProfileScreen = () => {
     );
   }
 
-  // 🧩 Nếu đã đăng nhập: render thông tin người dùng
+  // UI: Đã đăng nhập
   const user = currentUser as User;
   const savedCourses = courses.filter((c) =>
     user.savedcourselist?.includes(Number(c.id))

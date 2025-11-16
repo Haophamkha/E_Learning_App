@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { FaRegStar } from "react-icons/fa";
-import { CiBookmark } from "react-icons/ci";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { Course, Teacher } from "../types/type";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../auth/store";
@@ -34,7 +33,7 @@ export const CourseCard = ({
 
     const updatedUser = await toggleSavedCourse(currentUser, course.id);
     if (updatedUser) {
-      dispatch(updateCurrentUser(updatedUser)); // ✅ cập nhật đúng currentUser
+      dispatch(updateCurrentUser(updatedUser));
     }
   };
 
@@ -50,7 +49,11 @@ export const CourseCard = ({
             style={styles.bookmarkButton}
             onPress={handleToggleSaved}
           >
-            <CiBookmark size={30} color={saved ? "#00BCD4" : "#333"} />
+            <Ionicons
+              name={saved ? "bookmark" : "bookmark-outline"}
+              size={30}
+              color={saved ? "#00BCD4" : "#333"}
+            />
           </TouchableOpacity>
         </View>
         <Text style={styles.teacher} numberOfLines={1}>
@@ -60,7 +63,7 @@ export const CourseCard = ({
           {course.price.toLocaleString("vi-VN")}₫
         </Text>
         <View style={styles.row}>
-          <FaRegStar color="#FFD700" size={12} />
+          <FontAwesome name="star-o" color="#FFD700" size={12} />
           <Text style={styles.vote}>
             {course.vote} ({course.votecount})
           </Text>
@@ -71,7 +74,6 @@ export const CourseCard = ({
     </TouchableOpacity>
   );
 };
-
 
 const styles = StyleSheet.create({
   card: {

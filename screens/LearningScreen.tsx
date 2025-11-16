@@ -12,20 +12,17 @@ import {
   TextInput,
   Modal,
   Platform,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { TiTick } from "react-icons/ti";
-import { IoPlayOutline } from "react-icons/io5";
-import { MdOutlineLock } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../auth/store";
 import { RootStackParamList, Course } from "../types/type";
 import { addQAtoCourse, updateCourseQA } from "../auth/dataSlice";
 import ProjectCard from "../components/ProjectCard";
-import { FaRegFilePdf, FaRegFileAlt } from "react-icons/fa";
-import { BsFiletypeTxt } from "react-icons/bs";
 import type { AppDispatch } from "../auth/store";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Learning">;
@@ -41,7 +38,6 @@ export const LearningScreen = ({ route }: Props) => {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [projectName, setProjectName] = useState("");
-  const [projectDescription, setProjectDescription] = useState("");
   const [studentProjects, setStudentProjects] = useState(
     course.project?.studentproject || []
   );
@@ -64,7 +60,11 @@ export const LearningScreen = ({ route }: Props) => {
 
   const users = useSelector((state: RootState) => state.data.users);
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
+
+  // File & Image states
   const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [uploading, setUploading] = useState(false);
 
   const enrichedQAList = qaList.map((item) => {
     const user = users.find((u) => Number(u.id) === item.userid);
@@ -97,12 +97,68 @@ export const LearningScreen = ({ route }: Props) => {
   const getFileIconComponent = (ext?: string) => {
     switch (ext?.toLowerCase()) {
       case "pdf":
-        return <FaRegFilePdf size={28} color="#2B579A" />;
+        return (
+          <MaterialIcons name="picture-as-pdf" size={28} color="#2B579A" />
+        );
       case "txt":
-        return <BsFiletypeTxt size={28} color="#FF0000" />;
+        return <MaterialIcons name="description" size={28} color="#FF0000" />;
       default:
-        return <FaRegFileAlt size={28} color="#666" />;
+        return (
+          <MaterialIcons name="insert-drive-file" size={28} color="#666" />
+        );
     }
+  };
+
+  // Upload file to Supabase 
+  const uploadFile = async (
+    file: any,
+    folder: string,
+    userId: number,
+    projectName: string
+  ) => {
+    const response = await fetch(file.uri);
+    const blob = await response.blob();
+
+    const originalName = file.name;
+    const cleanName = originalName.replace(/\s+/g, "_"); 
+
+    // Tạo đường dẫn: folder/userId/projectName/cleanName
+    const safeProjectName = projectName.replace(/[^a-zA-Z0-9_-]/g, "_");
+    const filePath = `${folder}/${userId}/${safeProjectName}/${cleanName}`;
+
+    const { error } = await supabase.storage
+      .from("E_Learning_App")
+      .upload(filePath, blob, {
+        contentType: file.mimeType || "application/octet-stream",
+        upsert: true,
+      });
+
+    if (error) {
+      if (error.message.includes("duplicate")) {
+        const ext = cleanName.includes(".") ? cleanName.split(".").pop() : "";
+        const nameWithoutExt = cleanName.replace(`.${ext}`, "");
+        const timestamp = Date.now().toString().slice(-4);
+        const newName = `${nameWithoutExt}_${timestamp}.${ext}`;
+        return uploadFile(file, folder, userId, projectName);
+      }
+      throw error;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("E_Learning_App")
+      .getPublicUrl(filePath);
+
+    return {
+      url: urlData.publicUrl,
+      size: file.size
+        ? file.size >= 1024 * 1024
+          ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
+          : file.size >= 1024
+          ? `${(file.size / 1024).toFixed(2)} KB`
+          : `${file.size} bytes`
+        : "unknown",
+      originalName,
+    };
   };
 
   return (
@@ -118,12 +174,12 @@ export const LearningScreen = ({ route }: Props) => {
           <View style={styles.iconRow}>
             <View style={styles.iconGroup}>
               <Ionicons name="heart-outline" size={20} color="#ff4081" />
-              <Text style={styles.likeCount}> {course.like || 0} Like</Text>
+              <Text style={styles.likeCount}>{course.likes || 0} Like</Text>
             </View>
             <Text style={styles.dot}>•</Text>
             <View style={styles.iconGroup}>
               <Ionicons name="share-social-outline" size={20} color="#00BCD4" />
-              <Text style={styles.likeCount}> {course.share || 0} Share</Text>
+              <Text style={styles.likeCount}>{course.share || 0} Share</Text>
             </View>
           </View>
         </View>
@@ -157,14 +213,14 @@ export const LearningScreen = ({ route }: Props) => {
             {Array.isArray(course.chapters) && course.chapters.length > 0 ? (
               course.chapters.map((chapter, chapterIndex) => (
                 <View
-                  key={chapter.order ?? chapterIndex}
+                  key={chapter.order ?? 100 + chapterIndex}
                   style={{ marginBottom: 10 }}
                 >
                   <View style={styles.chapterHeader}>
                     <Text style={styles.chapterTitle}>
                       {`Chương ${
                         romanNumerals[chapterIndex] || chapterIndex + 1
-                      }: ${chapter.title}`}
+                      }: ${chapter.title || "Untitled"}`}
                     </Text>
                   </View>
 
@@ -198,13 +254,25 @@ export const LearningScreen = ({ route }: Props) => {
                             </Text>
                           </View>
                           {lesson.status === "completed" && (
-                            <TiTick size={20} color="#0055FF" />
+                            <Ionicons
+                              name="checkmark-circle-outline"
+                              size={20}
+                              color="#0055FF"
+                            />
                           )}
                           {lesson.status === "inprogress" && (
-                            <IoPlayOutline size={20} color="#00BCD4" />
+                            <Ionicons
+                              name="play-outline"
+                              size={20}
+                              color="#00BCD4"
+                            />
                           )}
                           {lesson.status === "not_started" && (
-                            <MdOutlineLock size={20} color="#AAA" />
+                            <MaterialIcons
+                              name="lock-outline"
+                              size={20}
+                              color="#AAA"
+                            />
                           )}
                         </TouchableOpacity>
                       );
@@ -220,6 +288,7 @@ export const LearningScreen = ({ route }: Props) => {
           </ScrollView>
         )}
 
+        {/* PROJECTS */}
         {activeTab === "PROJECTS" && (
           <View style={styles.tabContent}>
             {/* Upload box */}
@@ -242,7 +311,6 @@ export const LearningScreen = ({ route }: Props) => {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {studentProjects.map((proj, index) => {
                 const user = users.find((u) => u.id === proj.userid);
-
                 return (
                   <ProjectCard
                     key={index}
@@ -255,6 +323,8 @@ export const LearningScreen = ({ route }: Props) => {
                 );
               })}
             </ScrollView>
+
+            {/* Modal Upload */}
             <Modal
               visible={modalVisible}
               animationType="slide"
@@ -265,165 +335,137 @@ export const LearningScreen = ({ route }: Props) => {
                 <View style={styles.modalContainer}>
                   <Text style={styles.modalTitle}>Upload Project</Text>
 
+                  {/* Project Name */}
                   <TextInput
                     style={styles.modalInput}
-                    placeholder="Project Name"
+                    placeholder="Tên dự án *"
                     value={projectName}
                     onChangeText={setProjectName}
                   />
 
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="Image URL (optional)"
-                    value={projectDescription}
-                    onChangeText={setProjectDescription}
-                  />
+                  {/* Choose Image */}
+                  <TouchableOpacity
+                    style={[
+                      styles.modalUploadButton,
+                      { backgroundColor: "#FF9800" },
+                    ]}
+                    onPress={async () => {
+                      try {
+                        const result = await DocumentPicker.getDocumentAsync({
+                          type: "image/*",
+                          copyToCacheDirectory: true,
+                        });
+                        if (!result.canceled) {
+                          setSelectedImage(result.assets[0]);
+                        }
+                      } catch (err) {
+                        Alert.alert("Lỗi", "Không thể chọn ảnh");
+                      }
+                    }}
+                  >
+                    <Ionicons name="image-outline" size={24} color="#fff" />
+                    <Text style={styles.modalUploadButtonText}>
+                      Chọn ảnh dự án
+                    </Text>
+                  </TouchableOpacity>
 
-                  {/* Preview ảnh */}
-                  <Image
-                    source={{
-                      uri:
-                        projectDescription ||
-                        "https://cdn-icons-png.flaticon.com/512/906/906343.png",
-                    }}
-                    style={{
-                      width: "100%",
-                      height: 150,
-                      borderRadius: 8,
-                      marginBottom: 12,
-                    }}
-                  />
-                  {/* Nút chọn file */}
+                  {/* Image Preview */}
+                  {selectedImage && (
+                    <Image
+                      source={{ uri: selectedImage.uri }}
+                      style={styles.previewImage}
+                    />
+                  )}
+
+                  {/* Choose File */}
                   <TouchableOpacity
                     style={styles.modalUploadButton}
                     onPress={async () => {
                       try {
                         const result = await DocumentPicker.getDocumentAsync({
                           type: "*/*",
-                          multiple: false,
-                          copyToCacheDirectory: false,
+                          copyToCacheDirectory: true,
                         });
-
-                        if (result.canceled) {
-                          console.log("❌ Người dùng đã hủy chọn file.");
-                          return;
+                        if (!result.canceled) {
+                          setSelectedFile(result.assets[0]);
                         }
-
-                        const file = result.assets[0];
-                        const readableSize = file.size
-                          ? file.size >= 1024 * 1024
-                            ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
-                            : file.size >= 1024
-                            ? `${(file.size / 1024).toFixed(2)} KB`
-                            : `${file.size} bytes`
-                          : "unknown";
-
-                        setSelectedFile({
-                          name: file.name,
-                          uri: file.uri,
-                          size: file.size,
-                          sizeReadable: readableSize,
-                          mimeType: file.mimeType,
-                        });
-
-                        console.log("📂 File được chọn:", file);
                       } catch (err) {
-                        console.error("Lỗi khi chọn file:", err);
+                        Alert.alert("Lỗi", "Không thể chọn file");
                       }
                     }}
                   >
-                    <Ionicons
-                      name={
-                        Platform.OS === "ios"
-                          ? "cloud-upload-outline"
-                          : "cloud-upload-outline"
-                      }
-                      size={24}
-                      color="#fff"
-                    />
-                    <Text style={styles.modalUploadButtonText}>Chọn file</Text>
+                    <Ionicons name="attach-outline" size={24} color="#fff" />
+                    <Text style={styles.modalUploadButtonText}>
+                      Chọn file đính kèm
+                    </Text>
                   </TouchableOpacity>
+
+                  {/* File Info */}
                   {selectedFile && (
-                    <View
-                      style={{
-                        backgroundColor: "#f0f0f0",
-                        borderRadius: 8,
-                        padding: 10,
-                        marginBottom: 12,
-                      }}
-                    >
-                      <Text style={{ fontWeight: "bold", marginBottom: 4 }}>
-                        Selected File:
+                    <View style={styles.fileInfoBox}>
+                      <Text style={{ fontWeight: "bold" }}>File:</Text>
+                      <Text numberOfLines={1}>{selectedFile.name}</Text>
+                      <Text style={{ fontSize: 12, color: "#666" }}>
+                        {selectedFile.size
+                          ? selectedFile.size >= 1024 * 1024
+                            ? `${(selectedFile.size / (1024 * 1024)).toFixed(
+                                2
+                              )} MB`
+                            : `${(selectedFile.size / 1024).toFixed(2)} KB`
+                          : "Unknown"}
                       </Text>
-                      <Text>Name: {selectedFile.name}</Text>
-                      <Text>Size: {selectedFile.sizeReadable}</Text>
-                      <Text>Type: {selectedFile.mimeType}</Text>
                     </View>
                   )}
 
-                  {/* Nút upload tổng */}
+                  {/* Upload Button */}
                   <TouchableOpacity
                     style={[
                       styles.modalUploadButton,
-                      { backgroundColor: "#4CAF50" },
+                      { backgroundColor: "#4CAF50", marginTop: 16 },
                     ]}
                     onPress={async () => {
                       if (!projectName.trim()) {
-                        alert("Vui lòng nhập tên project");
+                        Alert.alert("Lỗi", "Vui lòng nhập tên dự án");
                         return;
                       }
                       if (!currentUser) {
-                        alert("Bạn chưa đăng nhập!");
+                        Alert.alert("Lỗi", "Bạn chưa đăng nhập!");
                         return;
                       }
 
+                      setUploading(true);
                       try {
-                        let fileUrl = "";
-                        let resourseData = [];
+                        let imageUrl =
+                          "https://cdn-icons-png.flaticon.com/512/906/906343.png";
+                        let resourseData: any[] = [];
 
-                        // Nếu có file, upload lên Supabase
-                        if (selectedFile) {
-                          const response = await fetch(selectedFile.uri);
-                          const fileBlob = await response.blob();
-                          const originalName =
-                            selectedFile.name?.replace(/\s+/g, "_") || "file";
-                          const ext = originalName.split(".").pop();
-                          const cleanFileName = `${Date.now()}_${originalName}`;
-                          const filePath = `student_projects/${selectedFile.name}`;
-
-                          const { data, error } = await supabase.storage
-                            .from("E_Learning_App")
-                            .upload(filePath, fileBlob, {
-                              contentType:
-                                selectedFile.mimeType ||
-                                "application/octet-stream",
-                            });
-
-                          if (error) throw error;
-
-                          const { data: urlData } = supabase.storage
-                            .from("E_Learning_App")
-                            .getPublicUrl(filePath);
-
-                          fileUrl = urlData.publicUrl;
-
-                          resourseData.push({
-                            url: fileUrl,
-                            size: selectedFile.sizeReadable,
-                          });
+                        if (selectedImage) {
+                          const imgData = await uploadFile(
+                            selectedImage,
+                            "project_thumbnails",
+                            Number(currentUser.id),
+                            projectName
+                          );
+                          imageUrl = imgData.url;
                         }
 
-                        // Tạo đối tượng StudentProject mới
+                        if (selectedFile) {
+                          const fileData = await uploadFile(
+                            selectedFile,
+                            "student_projects",
+                            Number(currentUser.id),
+                            projectName
+                          );
+                          resourseData.push(fileData);
+                        }
+
                         const newProject = {
                           userid: Number(currentUser.id),
                           nameprj: projectName,
-                          imageprj:
-                            projectDescription ||
-                            "https://cdn-icons-png.flaticon.com/512/906/906343.png",
+                          imageprj: imageUrl,
                           resourse: resourseData,
                         };
 
-                        // Gọi hàm Redux để lưu vào Supabase
                         const updatedCourse = await dispatch(
                           addStudentProjectToCourse({
                             courseId: course.id,
@@ -431,7 +473,6 @@ export const LearningScreen = ({ route }: Props) => {
                           })
                         ).unwrap();
 
-                        // Cập nhật hiển thị trong local state
                         if (!course.project)
                           course.project = {
                             description: "",
@@ -441,26 +482,43 @@ export const LearningScreen = ({ route }: Props) => {
                         setStudentProjects(
                           updatedCourse.project.studentproject
                         );
-                        // Reset modal
+
                         setProjectName("");
-                        setProjectDescription("");
+                        setSelectedImage(null);
                         setSelectedFile(null);
                         setModalVisible(false);
-                        alert("Upload project thành công!");
-                      } catch (err) {
-                        alert("Upload thất bại");
+                        Alert.alert("Thành công", "Upload dự án thành công!");
+                      } catch (err: any) {
+                        Alert.alert("Lỗi", err.message || "Upload thất bại");
+                      } finally {
+                        setUploading(false);
                       }
                     }}
+                    disabled={uploading}
                   >
-                    <Ionicons name="checkmark-outline" size={24} color="#fff" />
-                    <Text style={styles.modalUploadButtonText}>
-                      Upload Project
-                    </Text>
+                    {uploading ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <>
+                        <Ionicons
+                          name="checkmark-outline"
+                          size={24}
+                          color="#fff"
+                        />
+                        <Text style={styles.modalUploadButtonText}>
+                          Upload Project
+                        </Text>
+                      </>
+                    )}
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     style={styles.modalCloseButton}
-                    onPress={() => setModalVisible(false)}
+                    onPress={() => {
+                      setModalVisible(false);
+                      setSelectedImage(null);
+                      setSelectedFile(null);
+                    }}
                   >
                     <Text style={{ color: "#00BCD4", fontWeight: "bold" }}>
                       Cancel
@@ -513,14 +571,12 @@ export const LearningScreen = ({ route }: Props) => {
               .map((res, idx) => {
                 const filename =
                   res.url.split("/").pop()?.split("?")[0] || "Unknown";
-                console.log(`File: ${filename}, Size: ${res.size}`);
                 return (
                   <View key={idx} style={styles.resourceRow}>
                     <View style={styles.left}>
                       <View style={styles.fileIcon}>
                         {getFileIconComponent(filename.split(".").pop())}
                       </View>
-
                       <View>
                         <Text style={styles.fileName} numberOfLines={1}>
                           {filename}
@@ -699,10 +755,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   uploadText: { color: "#00BCD4", fontWeight: "bold", marginTop: 8 },
-  projectCard: { width: 140, marginRight: 12 },
-  projectImage: { width: 140, height: 100, borderRadius: 10 },
-  projectName: { fontWeight: "600", fontSize: 15, color: "#222", marginTop: 6 },
-  projectUser: { color: "#666", fontSize: 13 },
   resourceRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -811,6 +863,18 @@ const styles = StyleSheet.create({
   modalCloseButton: {
     alignItems: "center",
     paddingVertical: 8,
+  },
+  previewImage: {
+    width: "100%",
+    height: 150,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  fileInfoBox: {
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 12,
   },
 });
 

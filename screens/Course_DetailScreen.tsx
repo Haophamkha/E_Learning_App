@@ -7,27 +7,10 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-
-import { InspiresCourse } from "../components/InspiresCourse";
+import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/type";
-import { FaRegStar } from "react-icons/fa";
-import { CiShoppingCart } from "react-icons/ci";
-import { TiTick } from "react-icons/ti";
-import { IoPlayOutline } from "react-icons/io5";
-import { BsCameraVideo } from "react-icons/bs";
-import { AiOutlineGlobal } from "react-icons/ai";
-import { IoDocumentTextOutline } from "react-icons/io5";
-import { CiClock2 } from "react-icons/ci";
-import { PiMedal } from "react-icons/pi";
-import { BiCheckDouble } from "react-icons/bi";
 import { ReviewCard } from "../components/ReviewCard";
-import {
-  MdOutlineLock,
-  MdKeyboardArrowUp,
-  MdKeyboardArrowDown,
-} from "react-icons/md";
-
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../auth/store";
 import { supabase } from "../auth/supabaseClient";
@@ -41,7 +24,9 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
   const { course, teachers, courses, users = [] } = route.params;
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>("OVERVIEW");
   const [isExpanded, setIsExpanded] = useState(false);
-  const [expandedChapters, setExpandedChapters] = useState<{ [key: number]: boolean }>({});
+  const [expandedChapters, setExpandedChapters] = useState<{
+    [key: number]: boolean;
+  }>({});
   const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
 
   const dispatch = useDispatch();
@@ -54,13 +39,23 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
     }));
   };
 
-  //Tính giá sau giảm
   const discountPercent = course.discount || 0;
   const finalPrice = discountPercent
     ? Math.round(course.price * (1 - discountPercent / 100))
     : course.price;
 
-  const romanNumerals = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+  const romanNumerals = [
+    "I",
+    "II",
+    "III",
+    "IV",
+    "V",
+    "VI",
+    "VII",
+    "VIII",
+    "IX",
+    "X",
+  ];
 
   const [showAll, setShowAll] = useState(false);
   type FilterType = number | "All";
@@ -71,7 +66,7 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
       ? course.reviews || []
       : (course.reviews || []).filter((r) => r.vote === activeFilter);
 
-  // ADD TO CART 
+  // ADD TO CART
   const handleAddToCart = async () => {
     if (!currentUser) {
       alert("Please log in to add this course to your cart.");
@@ -122,12 +117,12 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
       >
         <Image source={{ uri: course.image }} style={styles.image} />
 
-        {/* course info*/}
         <View style={styles.content}>
           <Text style={styles.title}>{course.name}</Text>
 
+          {/* Rating & Lessons */}
           <View style={styles.row}>
-            <FaRegStar color="#FFD700" />
+            <FontAwesome name="star-o" color="#FFD700" size={16} />
             <Text style={styles.vote}>{course.vote.toFixed(1)}</Text>
             <Text style={styles.voteCount}>({course.votecount})</Text>
             <Text style={styles.dot}>•</Text>
@@ -135,7 +130,7 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
             <Text style={styles.lessonText}> lessons</Text>
           </View>
 
-          {/* tab */}
+          {/* Tabs */}
           <View style={styles.tabContainer}>
             {tabs.map((tab) => (
               <TouchableOpacity
@@ -159,9 +154,9 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
           </View>
 
           <View style={styles.tabContent}>
+            {/* OVERVIEW TAB */}
             {activeTab === "OVERVIEW" && (
               <>
-                {/*teacher info */}
                 {teachers &&
                   (() => {
                     const teacher = teachers.find(
@@ -185,7 +180,6 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
                     );
                   })()}
 
-                {/* Description */}
                 <Text style={styles.sectionTitle}>Description</Text>
                 <Text
                   style={styles.sectionText}
@@ -201,37 +195,52 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
                   </TouchableOpacity>
                 )}
 
-                {/* Benefit */}
                 <Text style={[styles.sectionTitle, { marginTop: 16 }]}>
                   Benefits
                 </Text>
                 <View style={styles.benefitContainer}>
                   <View style={styles.benefitItem}>
-                    <BsCameraVideo color="#00BCD4" size={20} />
+                    <MaterialIcons
+                      name="video-collection"
+                      color="#00BCD4"
+                      size={20}
+                    />
                     <Text style={styles.benefitText}>
                       14 hours on-demand video
                     </Text>
                   </View>
                   <View style={styles.benefitItem}>
-                    <AiOutlineGlobal color="#00BCD4" size={20} />
+                    <MaterialIcons name="public" color="#00BCD4" size={20} />
                     <Text style={styles.benefitText}>Native teacher</Text>
                   </View>
                   <View style={styles.benefitItem}>
-                    <IoDocumentTextOutline color="#00BCD4" size={20} />
+                    <Ionicons
+                      name="document-text-outline"
+                      color="#00BCD4"
+                      size={20}
+                    />
                     <Text style={styles.benefitText}>100% free document</Text>
                   </View>
                   <View style={styles.benefitItem}>
-                    <CiClock2 color="#00BCD4" size={20} />
+                    <Ionicons name="time-outline" color="#00BCD4" size={20} />
                     <Text style={styles.benefitText}>Full lifetime access</Text>
                   </View>
                   <View style={styles.benefitItem}>
-                    <PiMedal color="#00BCD4" size={20} />
+                    <MaterialIcons
+                      name="military-tech"
+                      color="#00BCD4"
+                      size={20}
+                    />
                     <Text style={styles.benefitText}>
                       Certificate of complete
                     </Text>
                   </View>
                   <View style={styles.benefitItem}>
-                    <BiCheckDouble color="#00BCD4" size={20} />
+                    <Ionicons
+                      name="checkmark-done-outline"
+                      color="#00BCD4"
+                      size={20}
+                    />
                     <Text style={styles.benefitText}>24/7 support</Text>
                   </View>
                 </View>
@@ -249,22 +258,23 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
                     )
                     .slice(0, 3)
                     .map((item) => (
-                      <InspiresCourse
+                      <TouchableOpacity
                         key={item.id}
-                        course={item}
-                        teachers={teachers}
                         onPress={() =>
                           navigation.navigate("Course_Detail", {
                             course: item,
                             teachers,
                           })
                         }
-                      />
+                      >
+                        {/* Dùng TouchableOpacity để bọc InspiresCourse nếu cần */}
+                        <Text>{item.name}</Text>
+                      </TouchableOpacity>
                     ))}
               </>
             )}
 
-            {/* === LESSONS TAB === */}
+            {/* LESSONS TAB */}
             {activeTab === "LESSONS" && (
               <ScrollView showsVerticalScrollIndicator={false}>
                 {course.chapters?.map((chapter, chapterIndex) => {
@@ -281,9 +291,17 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
                           {`${roman} - ${chapter.title}`}
                         </Text>
                         {expanded ? (
-                          <MdKeyboardArrowUp size={22} color="#666" />
+                          <MaterialIcons
+                            name="keyboard-arrow-up"
+                            size={22}
+                            color="#666"
+                          />
                         ) : (
-                          <MdKeyboardArrowDown size={22} color="#666" />
+                          <MaterialIcons
+                            name="keyboard-arrow-down"
+                            size={22}
+                            color="#666"
+                          />
                         )}
                       </TouchableOpacity>
 
@@ -318,15 +336,27 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
                                 </Text>
                               </View>
 
-                              {lesson.status === "completed" && (
-                                <TiTick size={20} color="#0055FF" />
+                              {/* {lesson.status === "completed" && (
+                                <Ionicons
+                                  name="checkmark-circle-outline"
+                                  size={20}
+                                  color="#0055FF"
+                                />
                               )}
                               {lesson.status === "inprogress" && (
-                                <IoPlayOutline size={20} color="#00BCD4" />
+                                <Ionicons
+                                  name="play-outline"
+                                  size={20}
+                                  color="#00BCD4"
+                                />
                               )}
                               {lesson.status === "not_started" && (
-                                <MdOutlineLock size={20} color="#AAA" />
-                              )}
+                                <MaterialIcons
+                                  name="lock-outline"
+                                  size={20}
+                                  color="#AAA"
+                                />
+                              )} */}
                             </TouchableOpacity>
                           );
                         })}
@@ -336,11 +366,12 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
               </ScrollView>
             )}
 
+            {/* REVIEW TAB */}
             {activeTab === "REVIEW" && (
               <>
                 <View style={styles.reviewHeader}>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <FaRegStar color="#FFD700" size={20} />
+                    <FontAwesome name="star-o" color="#FFD700" size={20} />
                     <Text style={styles.reviewScore}>
                       {course.vote.toFixed(1)}/5
                     </Text>
@@ -375,10 +406,10 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
                         >
                           {star}
                         </Text>
-                        <FaRegStar
+                        <FontAwesome
+                          name="star-o"
                           size={14}
                           color={activeFilter === star ? "#fff" : "#00BCD4"}
-                          style={{ marginLeft: 6 }}
                         />
                       </View>
                     </TouchableOpacity>
@@ -419,7 +450,7 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
         </View>
       </ScrollView>
 
-      {/* add to cart */}
+      {/* Bottom Bar */}
       <View style={styles.bottomBar}>
         <View style={styles.priceContainer}>
           <Text style={styles.price}>${finalPrice}</Text>
@@ -439,8 +470,6 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
               course.id
             );
 
-          const isInCart = currentUser?.cart?.includes(course.id);
-
           return (
             <TouchableOpacity
               style={[
@@ -456,9 +485,13 @@ export const Course_DetailScreen = ({ route, navigation }: Props) => {
               disabled={isPurchased}
             >
               {isPurchased ? (
-                <TiTick color="white" size={20} />
+                <Ionicons
+                  name="checkmark-circle-outline"
+                  color="white"
+                  size={20}
+                />
               ) : (
-                <CiShoppingCart color="white" size={20} />
+                <Ionicons name="cart-outline" color="white" size={20} />
               )}
               <Text style={styles.cartText}>
                 {isPurchased
@@ -480,10 +513,10 @@ const styles = StyleSheet.create({
   image: { width: "100%", height: 230, resizeMode: "cover" },
   content: { padding: 16 },
   title: { fontSize: 25, fontWeight: "bold", color: "#222" },
-  row: { flexDirection: "row", alignItems: "center", marginTop: 8 },
-  vote: { fontSize: 18, fontWeight: "bold", color: "#333", marginLeft: 4 },
-  voteCount: { fontSize: 18, color: "#888", marginLeft: 2 },
-  dot: { fontSize: 18, color: "#aaa", marginHorizontal: 6 },
+  row: { flexDirection: "row", alignItems: "center", marginTop: 8, gap: 4 },
+  vote: { fontSize: 18, fontWeight: "bold", color: "#333" },
+  voteCount: { fontSize: 18, color: "#888" },
+  dot: { fontSize: 18, color: "#aaa" },
   lessonCount: { fontSize: 18, fontWeight: "bold", color: "#333" },
   lessonText: { fontSize: 18, color: "#888" },
   tabContainer: {
@@ -497,9 +530,19 @@ const styles = StyleSheet.create({
   tabText: { fontSize: 16, color: "#666" },
   tabTextActive: { color: "#00BCD4", fontWeight: "bold" },
   tabContent: { marginTop: 20, paddingBottom: 20 },
-  sectionTitle: { fontSize: 16, fontWeight: "bold", color: "#222", marginBottom: 10 },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#222",
+    marginBottom: 10,
+  },
   sectionText: { fontSize: 15, color: "#444", marginTop: 6, lineHeight: 22 },
-  viewMoreBtn: { color: "#00BCD4", marginTop: 4, fontWeight: "500", fontSize: 15 },
+  viewMoreBtn: {
+    color: "#00BCD4",
+    marginTop: 4,
+    fontWeight: "500",
+    fontSize: 15,
+  },
   chapterHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -538,23 +581,21 @@ const styles = StyleSheet.create({
     borderTopColor: "#eee",
   },
   priceContainer: { flexDirection: "column" },
-
   price: { fontSize: 20, fontWeight: "bold", color: "#222" },
   discountText: { fontSize: 13, color: "#888" },
   originalPrice: { textDecorationLine: "line-through" },
   cartButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#00BCD4",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
+    gap: 6,
   },
   cartText: {
     color: "#fff",
     fontWeight: "600",
     fontSize: 16,
-    marginLeft: 6,
   },
   teacherContainer: {
     flexDirection: "row",
@@ -588,7 +629,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 14,
   },
-
   benefitContainer: {
     marginTop: 8,
     gap: 10,
@@ -612,9 +652,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#222",
-    marginLeft: 6,
   },
-  reviewCount: { fontSize: 14, color: "#777", marginLeft: 4 },
+  reviewCount: { fontSize: 14, color: "#777" },
   viewAllBtn: { color: "#00BCD4", fontWeight: "600", fontSize: 14 },
   filterRow: {
     flexDirection: "row",
@@ -634,23 +673,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderColor: "#00BCD4",
   },
-
   filterBtnActive: {
     backgroundColor: "#00BCD4",
     borderColor: "#00BCD4",
   },
-
   starWithNumber: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 6,
   },
-
   filterText: {
     fontSize: 14,
     fontWeight: "600",
     color: "#00BCD4",
   },
-
   filterTextActive: {
     color: "#fff",
     fontWeight: "600",

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
-import { GoStarFill } from "react-icons/go";
+import { FontAwesome } from "@expo/vector-icons";
 import { User, Review } from "../types/type";
 
 interface ReviewCardProps {
@@ -8,7 +8,6 @@ interface ReviewCardProps {
   user?: User;
 }
 
-//Tính số ngày
 const getDaysAgo = (postDate: string) => {
   const posted = new Date(postDate);
   const now = new Date();
@@ -43,11 +42,11 @@ export const ReviewCard = ({ review, user }: ReviewCardProps) => {
         {/* Rating */}
         <View style={styles.ratingContainer}>
           {Array.from({ length: 5 }).map((_, i) => (
-            <GoStarFill
+            <FontAwesome
               key={i}
+              name={i < review.vote ? "star" : "star-o"}
               size={16}
               color={i < review.vote ? "#FFD700" : "#E0E0E0"}
-              style={{ marginLeft: 2 }}
             />
           ))}
         </View>
@@ -60,7 +59,7 @@ export const ReviewCard = ({ review, user }: ReviewCardProps) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "rgba(250, 246, 246, 1);",
+    backgroundColor: "rgba(250, 246, 246, 1)",
     borderRadius: 12,
     padding: 14,
     marginVertical: 8,
@@ -92,6 +91,7 @@ const styles = StyleSheet.create({
   },
   ratingContainer: {
     flexDirection: "row",
+    gap: 2,
   },
   content: {
     color: "#333",

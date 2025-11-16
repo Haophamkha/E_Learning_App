@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { FaRegStar } from "react-icons/fa";
-import { CiBookmark } from "react-icons/ci";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { Teacher, Course, User } from "../types/type";
 import { RootState } from "../auth/store";
@@ -12,14 +11,14 @@ interface InspiresCourseProps {
   course: Course;
   teachers?: Teacher[];
   onPress?: () => void;
-  saved: boolean;
+  saved?: boolean;
 }
 
 export const InspiresCourse = ({
   course,
   teachers = [],
   onPress,
-  
+  saved: initialSaved,
 }: InspiresCourseProps) => {
   const dispatch = useDispatch();
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
@@ -29,16 +28,16 @@ export const InspiresCourse = ({
   );
   const teacherName = teacher ? teacher.name : "Unknown";
 
-  // Kiểm tra course đã saved hay chưa
-  const saved = currentUser?.savedcourselist?.includes(course.id);
+  const saved =
+    currentUser?.savedcourselist?.includes(course.id) ?? initialSaved;
 
-const handleToggleSaved = async () => {
-  if (!currentUser) return;
-  const updatedUser = await toggleSavedCourse(currentUser, course.id);
-  if (updatedUser) {
-    dispatch(updateCurrentUser(updatedUser));
-  }
-};
+  const handleToggleSaved = async () => {
+    if (!currentUser) return;
+    const updatedUser = await toggleSavedCourse(currentUser, course.id);
+    if (updatedUser) {
+      dispatch(updateCurrentUser(updatedUser));
+    }
+  };
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
@@ -51,7 +50,8 @@ const handleToggleSaved = async () => {
           </Text>
 
           <TouchableOpacity onPress={handleToggleSaved}>
-            <CiBookmark
+            <Ionicons
+              name={saved ? "bookmark" : "bookmark-outline"}
               size={30}
               style={{ ...styles.bookmark, color: saved ? "#00BCD4" : "#777" }}
             />
@@ -64,8 +64,8 @@ const handleToggleSaved = async () => {
         </Text>
 
         <View style={styles.row}>
-          <FaRegStar color="#FFD700" />
-          <Text style={styles.vote}>
+          <FontAwesome name="star-o" color="#FFD700" size={16} />
+          <Text style={[styles.vote, { marginLeft: 4 }]}>
             {course.vote} ({course.votecount})
           </Text>
           <Text style={styles.dot}>•</Text>
@@ -130,7 +130,6 @@ const styles = StyleSheet.create({
   vote: {
     fontSize: 12,
     color: "#555",
-    marginLeft: 4,
   },
   dot: {
     fontSize: 14,

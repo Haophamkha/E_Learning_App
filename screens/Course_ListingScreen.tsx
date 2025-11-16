@@ -10,7 +10,7 @@ import { Feather } from "@expo/vector-icons";
 import { TextInput } from "react-native-paper";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useDispatch, useSelector } from "react-redux";
-import { RootStackParamList, Course, Teacher } from "../types/type";
+import { RootStackParamList, Course } from "../types/type";
 import { fetchAppData } from "../auth/dataSlice";
 import { InspiresCourse } from "../components/InspiresCourse";
 import { RootState } from "../auth/store";
@@ -18,20 +18,18 @@ import { RootState } from "../auth/store";
 type Props = NativeStackScreenProps<RootStackParamList, "Course_Listing">;
 
 export const Course_ListingScreen = ({ navigation, route }: Props) => {
-  const { keyword, category } = route.params || {};
+  const { keyword = "", category } = route.params || {};
 
   const dispatch = useDispatch<any>();
   const { courses, teachers } = useSelector((state: RootState) => state.data);
 
-  const [searchTerm, setSearchTerm] = useState(keyword || "");
+  const [searchTerm, setSearchTerm] = useState(keyword);
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
 
-  // --- Load dữ liệu từ Redux (Supabase) ---
   useEffect(() => {
     dispatch(fetchAppData());
   }, [dispatch]);
 
-  // --- Lọc khóa học theo category và searchTerm ---
   useEffect(() => {
     let result = courses;
 
@@ -42,7 +40,7 @@ export const Course_ListingScreen = ({ navigation, route }: Props) => {
     }
     if (searchTerm.trim()) {
       result = result.filter((c) =>
-        (c.name).toLowerCase().includes(searchTerm.toLowerCase())
+        c.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -51,7 +49,6 @@ export const Course_ListingScreen = ({ navigation, route }: Props) => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Search Bar */}
       <View style={styles.searchBar}>
         <TextInput
           style={styles.searchInput}
@@ -69,7 +66,6 @@ export const Course_ListingScreen = ({ navigation, route }: Props) => {
 
       <Text style={styles.resultText}>{filteredCourses.length} Results</Text>
 
-      {/* List courses */}
       <View style={{ marginTop: 10 }}>
         {filteredCourses.map((course) => (
           <InspiresCourse

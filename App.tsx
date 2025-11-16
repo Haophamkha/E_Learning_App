@@ -5,11 +5,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider, useDispatch } from "react-redux";
 import { store, AppDispatch } from "./auth/store";
+import Icon from "react-native-vector-icons/Ionicons";
 
-import { TiHomeOutline } from "react-icons/ti";
-import { GoSearch } from "react-icons/go";
-import { PiBookOpenLight } from "react-icons/pi";
-import { CiUser } from "react-icons/ci";
 
 import { HomeScreen } from "./screens/HomeScreen";
 import { MyCourseScreen } from "./screens/MyCourseScreen";
@@ -37,13 +34,13 @@ function MainTabs() {
         tabBarInactiveTintColor: "gray",
         tabBarIcon: ({ color, size }) => {
           if (route.name === "Home")
-            return <TiHomeOutline size={size} color={color} />;
+            return <Icon name="home-outline" size={size} color={color} />;
           if (route.name === "MyCourse")
-            return <PiBookOpenLight size={size} color={color} />;
+            return <Icon name="book-outline" size={size} color={color} />;
           if (route.name === "Course_Searching")
-            return <GoSearch size={size} color={color} />;
+            return <Icon name="search-outline" size={size} color={color} />;
           if (route.name === "UserProfile")
-            return <CiUser size={size} color={color} />;
+            return <Icon name="person-outline" size={size} color={color} />;
         },
       })}
     >

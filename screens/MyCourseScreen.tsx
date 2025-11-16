@@ -81,7 +81,7 @@ const filteredCourses = useMemo(() => {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color="#00BCD4" />
-        <Text style={{ marginTop: 10 }}>Đang tải dữ liệu...</Text>
+        <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
       </View>
     );
   }
@@ -212,7 +212,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginRight: 20,
   },
-  
 
   bannerTitle: {
     color: "#fff",
@@ -228,6 +227,11 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   joinText: { color: "#00BCD4", fontWeight: "bold", fontSize: 16 },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
+  },
 });
 
 export default MyCourseScreen;
