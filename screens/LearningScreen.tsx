@@ -11,7 +11,6 @@ import {
   ScrollView,
   TextInput,
   Modal,
-  Platform,
   Alert,
   ActivityIndicator,
 } from "react-native";
@@ -109,56 +108,68 @@ export const LearningScreen = ({ route }: Props) => {
     }
   };
 
-  // Upload file to Supabase 
+  // Upload file to Supabase (React Native compatible)
   const uploadFile = async (
     file: any,
     folder: string,
     userId: number,
     projectName: string
   ) => {
-    const response = await fetch(file.uri);
-    const blob = await response.blob();
-
     const originalName = file.name;
-    const cleanName = originalName.replace(/\s+/g, "_"); 
-
-    // Tạo đường dẫn: folder/userId/projectName/cleanName
+    const cleanName = originalName.replace(/\s+/g, "_");
     const safeProjectName = projectName.replace(/[^a-zA-Z0-9_-]/g, "_");
     const filePath = `${folder}/${userId}/${safeProjectName}/${cleanName}`;
 
-    const { error } = await supabase.storage
-      .from("E_Learning_App")
-      .upload(filePath, blob, {
-        contentType: file.mimeType || "application/octet-stream",
-        upsert: true,
-      });
+    try {
+      const fileToUpload = {
+        uri: file.uri,
+        name: cleanName,
+        type: file.mimeType || "application/octet-stream",
+      } as any;
 
-    if (error) {
-      if (error.message.includes("duplicate")) {
-        const ext = cleanName.includes(".") ? cleanName.split(".").pop() : "";
-        const nameWithoutExt = cleanName.replace(`.${ext}`, "");
-        const timestamp = Date.now().toString().slice(-4);
-        const newName = `${nameWithoutExt}_${timestamp}.${ext}`;
-        return uploadFile(file, folder, userId, projectName);
+      const { data, error } = await supabase.storage
+        .from("E_Learning_App")
+        .upload(filePath, fileToUpload, {
+          contentType: file.mimeType || "application/octet-stream",
+          upsert: true,
+        });
+
+      if (error) {
+        if (error.message.includes("duplicate")) {
+          const ext = cleanName.includes(".") ? cleanName.split(".").pop() : "";
+          const nameWithoutExt = cleanName.replace(`.${ext}`, "");
+          const timestamp = Date.now().toString().slice(-4);
+          const newName = `${nameWithoutExt}_${timestamp}.${ext}`;
+          return uploadFile(
+            { ...file, name: newName },
+            folder,
+            userId,
+            projectName
+          );
+        }
+        console.error("Supabase upload error:", error);
+        throw error;
       }
-      throw error;
+
+      const { data: urlData } = supabase.storage
+        .from("E_Learning_App")
+        .getPublicUrl(filePath);
+
+      return {
+        url: urlData.publicUrl,
+        size: file.size
+          ? file.size >= 1024 * 1024
+            ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
+            : file.size >= 1024
+            ? `${(file.size / 1024).toFixed(2)} KB`
+            : `${file.size} bytes`
+          : "unknown",
+        originalName,
+      };
+    } catch (err) {
+      console.error("Upload failed:", err);
+      throw err;
     }
-
-    const { data: urlData } = supabase.storage
-      .from("E_Learning_App")
-      .getPublicUrl(filePath);
-
-    return {
-      url: urlData.publicUrl,
-      size: file.size
-        ? file.size >= 1024 * 1024
-          ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
-          : file.size >= 1024
-          ? `${(file.size / 1024).toFixed(2)} KB`
-          : `${file.size} bytes`
-        : "unknown",
-      originalName,
-    };
   };
 
   return (
@@ -355,7 +366,7 @@ export const LearningScreen = ({ route }: Props) => {
                           type: "image/*",
                           copyToCacheDirectory: true,
                         });
-                        if (!result.canceled) {
+                        if (!result.canceled && result.assets[0]) {
                           setSelectedImage(result.assets[0]);
                         }
                       } catch (err) {
@@ -386,7 +397,7 @@ export const LearningScreen = ({ route }: Props) => {
                           type: "*/*",
                           copyToCacheDirectory: true,
                         });
-                        if (!result.canceled) {
+                        if (!result.canceled && result.assets[0]) {
                           setSelectedFile(result.assets[0]);
                         }
                       } catch (err) {
@@ -473,11 +484,12 @@ export const LearningScreen = ({ route }: Props) => {
                           })
                         ).unwrap();
 
-                        if (!course.project)
+                        if (!course.project) {
                           course.project = {
                             description: "",
                             studentproject: [],
                           };
+                        }
                         course.project = updatedCourse.project;
                         setStudentProjects(
                           updatedCourse.project.studentproject
@@ -489,6 +501,7 @@ export const LearningScreen = ({ route }: Props) => {
                         setModalVisible(false);
                         Alert.alert("Thành công", "Upload dự án thành công!");
                       } catch (err: any) {
+                        console.error("Upload error:", err);
                         Alert.alert("Lỗi", err.message || "Upload thất bại");
                       } finally {
                         setUploading(false);
@@ -518,6 +531,7 @@ export const LearningScreen = ({ route }: Props) => {
                       setModalVisible(false);
                       setSelectedImage(null);
                       setSelectedFile(null);
+                      setProjectName("");
                     }}
                   >
                     <Text style={{ color: "#00BCD4", fontWeight: "bold" }}>
@@ -586,7 +600,7 @@ export const LearningScreen = ({ route }: Props) => {
                     </View>
                     <TouchableOpacity
                       onPress={() => {
-                        console.log("Downloading:", res.url);
+                        console.log("Download:", res.url);
                       }}
                     >
                       <Ionicons
@@ -690,6 +704,7 @@ export const LearningScreen = ({ route }: Props) => {
   );
 };
 
+// Styles giữ nguyên
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#fff" },
   header: { alignItems: "flex-start", padding: 16 },
@@ -834,11 +849,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 12,
-  },
+  modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 12 },
   modalInput: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -855,15 +866,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
   },
-  modalUploadButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    marginLeft: 8,
-  },
-  modalCloseButton: {
-    alignItems: "center",
-    paddingVertical: 8,
-  },
+  modalUploadButtonText: { color: "#fff", fontWeight: "bold", marginLeft: 8 },
+  modalCloseButton: { alignItems: "center", paddingVertical: 8 },
   previewImage: {
     width: "100%",
     height: 150,

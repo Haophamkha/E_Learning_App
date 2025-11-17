@@ -296,9 +296,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 20,
+
+    paddingTop: 30, 
+    paddingBottom: 16,
+    minHeight: 100, 
   },
-  greeting: { color: "#fff", fontSize: 20, fontWeight: "bold" },
+
+  greeting: { color: "#fff", fontSize: 18, fontWeight: "bold" },
   subText: { color: "#E0F7FA", fontSize: 14, marginTop: 4 },
   iconContainer: { flexDirection: "row", alignItems: "center" },
   avatar: {

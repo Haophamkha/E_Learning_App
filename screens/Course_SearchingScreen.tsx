@@ -82,8 +82,10 @@ export const Course_SearchingScreen = ({ navigation }: Props) => {
   };
 
   const handleSelectCourse = (course: Course) => {
-    setKeyword(course.name || "");
+    setKeyword(""); 
     setShowDropdown(false);
+    inputRef.current?.blur(); 
+
     setTimeout(() => {
       stackNav.navigate("Course_Detail", {
         course,
@@ -93,6 +95,8 @@ export const Course_SearchingScreen = ({ navigation }: Props) => {
       });
     }, 100);
   };
+
+
 
   if (loading) {
     return (
